@@ -1,6 +1,9 @@
 import React from "react";
 
 export default function Login() {
+  const [signOrLog, setSignOrLog] = React.useState(false);
+  const [user, setUser] = React.useState([]);
+
   function handleSignLog(e) {
     e.preventDefault();
     document
@@ -8,61 +11,154 @@ export default function Login() {
       ?.classList.toggle("translate-x-[28rem]");
     document
       .querySelector(".signUp--header")
-      .classList?.toggle("-translate-y-12");
+      .classList?.toggle("-translate-x-36");
     document
       .querySelector(".login--header")
-      .classList?.toggle("translate-y-12");
+      .classList?.toggle("translate-x-36");
+
+    setSignOrLog(!signOrLog);
+  }
+
+  function handleSignUp() {
+    if (
+      document.querySelector(".signUp--username--input")?.value !== "" &&
+      document.querySelector(".signUp--password--input")?.value !== ""
+    ) {
+      user?.push({
+        userName: document.querySelector(".signUp--username--input")?.value,
+        password: document.querySelector(".signUp--password--input")?.value,
+      });
+    }
+
+    if (document.querySelector(".signUp--username--input")?.value === "") {
+      document
+        .querySelector(".signUp--username--error")
+        ?.classList.remove("hidden");
+    } else {
+      document
+        .querySelector(".signUp--username--error")
+        ?.classList.add("hidden");
+    }
+
+    if (document.querySelector(".signUp--password--input")?.value === "") {
+      document
+        .querySelector(".signUp--password--error")
+        ?.classList.remove("hidden");
+    } else {
+      document
+        .querySelector(".signUp--password--error")
+        ?.classList.add("hidden");
+    }
   }
 
   return (
     <div className="bg-zinc-700 w-6/12 h-4/6 rounded-[50px] border-2 border-orange-500 flex items-center gap-x-32 text-white relative">
       <div className="w-6/12 h-[38rem] gap-y-11 flex flex-col ml-10">
-        <input
-          type="text"
-          className="h-12 rounded-full mt-24 bg-zinc-600 border-2 border-zinc-500 focus:outline-none"
-        />
-        <input
-          type="text"
-          className="h-12 rounded-full bg-zinc-600 border-2 border-zinc-500 focus:outline-none"
-        />
-        <button className=" h-12 rounded-full font-semibold border-2 border-orange-400 hover:bg-orange-500 hover:text-black transition-all duration-500">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="UserName"
+            id="username"
+            className="peer signUp--username--input h-12 w-full rounded-full mt-24 bg-zinc-600 border-2 border-zinc-500 focus:outline-none placeholder-transparent indent-5"
+          />
+          <label
+            htmlFor="username"
+            className="absolute left-4 top-[75%] font-semibold text-white opacity-80  peer-focus:top-[49%] transition-all duration-500 peer-[:not(:placeholder-shown)]:top-[50%] select-none"
+          >
+            UserName
+          </label>
+          <label
+            htmlFor="username"
+            className="signUp--username--error absolute left-4 top-full font-semibold text-red-500 opacity-80 hidden text-xs"
+          >
+            Please enter a username
+          </label>
+        </div>
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="password"
+            id="password"
+            className="peer signUp--password--input h-12 w-full rounded-full bg-zinc-600 border-2 border-zinc-500 focus:outline-none placeholder-transparent indent-5"
+          />
+          <label
+            htmlFor="password"
+            className="absolute left-4 top-[25%] font-semibold text-white opacity-80  peer-focus:-top-6 transition-all duration-500 peer-[:not(:placeholder-shown)]:-top-6 select-none"
+          >
+            Password
+          </label>
+          <label
+            htmlFor="password"
+            className="signUp--password--error absolute left-4 top-full font-semibold text-red-500 opacity-80 hidden text-xs"
+          >
+            Please enter a password
+          </label>
+        </div>
+        <button
+          onClick={handleSignUp}
+          className=" h-12 rounded-full font-semibold border-2 border-orange-400 hover:bg-orange-500 hover:text-black transition-all duration-500"
+        >
           Sign Up
         </button>
       </div>
       <div className="w-6/12 h-[38rem] gap-y-11 flex flex-col mr-10">
-        <input
-          type="text"
-          className="h-12 rounded-full mt-24 bg-zinc-600 border-2 border-zinc-500 focus:outline-none"
-        />
-        <input
-          type="text"
-          className="h-12 rounded-full bg-zinc-600 border-2 border-zinc-500 focus:outline-none"
-        />
+        <div className="relative">
+          <input
+            type="text"
+            id="username"
+            className="peer h-12 w-full rounded-full mt-24 bg-zinc-600 border-2 border-zinc-500 focus:outline-none placeholder-transparent indent-4"
+            placeholder="UserName"
+          />
+          <label
+            htmlFor="username"
+            className="absolute left-4 top-[75%] font-semibold text-white opacity-80  peer-focus:top-[49%] transition-all duration-500 peer-[:not(:placeholder-shown)]:top-[50%] select-none"
+          >
+            UserName
+          </label>
+        </div>
+        <div className="relative">
+          <input
+            type="text"
+            id="password"
+            placeholder="Password"
+            className="peer h-12 w-full rounded-full bg-zinc-600 border-2 border-zinc-500 focus:outline-none indent-5 placeholder-transparent"
+          />
+          <label
+            htmlFor="password"
+            className="absolute left-4 top-[25%] font-semibold text-white opacity-80  peer-focus:-top-6 transition-all duration-500 peer-[:not(:placeholder-shown)]:-top-6 select-none"
+          >
+            Password
+          </label>
+        </div>
         <button className=" h-12 rounded-full font-semibold border-2 border-orange-400 hover:bg-orange-500 hover:text-black transition-all duration-500">
           Log In
         </button>
       </div>
       <div className="info--container w-6/12 h-[38rem] bg-zinc-600 border-2 border-zinc-500 rounded-[40px] ml-2 flex items-center justify-between flex-col z-10 transition-all ease-out absolute ">
         <div className="flex justify-center items-center flex-col mt-36">
-          <div className="overflow-hidden h-14 pr-10 relative">
-            <p className="signUp--header text-4xl font-extrabold ml-7 absolute -translate-y-12 transition-all duration-700">
+          <div className="overflow-hidden h-14 w-36 relative flex justify-center items-center">
+            <p className="signUp--header text-4xl w-36 font-extrabold absolute -translate-x-36 transition-all duration-500">
               Sign Up
             </p>
-            <p className="login--header text-4xl font-extrabold ml-8 transition-all duration-700">
+            <p className="login--header text-4xl font-extrabold absolute transition-all duration-500">
               Login
             </p>
           </div>
           <p className="font-semibold">
-            Welcome Back! Please Log in to access your account.
+            {signOrLog
+              ? "Welcome! Please sign up to create your account."
+              : "Welcome Back! Please log in to access your account."}
           </p>
         </div>
         <div className="flex justify-center items-center flex-col">
-          <p className="font-semibold mb-5">Don't have an account?</p>
+          <p className="font-semibold mb-5">
+            {signOrLog ? "Already got an account?" : "Don't have an account?"}
+          </p>
           <button
             onClick={handleSignLog}
             className="border-2 border-orange-400 w-11/12 mb-5 h-10 rounded-full font-semibold hover:bg-orange-500 hover:text-black transition-all duration-500"
           >
-            Sign Up
+            {signOrLog ? "Log In" : "Sign Up"}
           </button>
         </div>
       </div>
