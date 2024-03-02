@@ -16,21 +16,47 @@ export default function Login() {
       .querySelector(".login--header")
       .classList?.toggle("translate-x-36");
 
+    document.querySelector(".signUp--username--input").value = "";
+    document.querySelector(".signUp--password--input").value = "";
+    document.querySelector(".login--username--input").value = "";
+    document.querySelector(".login--password--input").value = "";
+
     setSignOrLog(!signOrLog);
   }
 
-  function handleSignUp() {
-    if (
-      document.querySelector(".signUp--username--input")?.value !== "" &&
-      document.querySelector(".signUp--password--input")?.value !== ""
-    ) {
-      user?.push({
-        userName: document.querySelector(".signUp--username--input")?.value,
-        password: document.querySelector(".signUp--password--input")?.value,
-      });
+  function handleSignUp(e) {
+    e.preventDefault();
+
+    const userNameInput = document.querySelector(
+      ".signUp--username--input"
+    )?.value;
+    const passwordInput = document.querySelector(
+      ".signUp--password--input"
+    )?.value;
+
+    if (userNameInput !== "" && passwordInput !== "") {
+      if (user.find((user) => user.userName === userNameInput)) {
+        document
+          .querySelector(".signUp--username--taken")
+          ?.classList.remove("hidden");
+        document
+          .querySelector(".signUp--username--taken")
+          ?.classList.add("flex");
+      } else {
+        user?.push({
+          userName: userNameInput,
+          password: passwordInput,
+        });
+        document
+          .querySelector(".signUp--username--taken")
+          ?.classList.add("hidden");
+        document
+          .querySelector(".signUp--username--taken")
+          ?.classList.remove("flex");
+      }
     }
 
-    if (document.querySelector(".signUp--username--input")?.value === "") {
+    if (userNameInput === "") {
       document
         .querySelector(".signUp--username--error")
         ?.classList.remove("hidden");
@@ -40,7 +66,7 @@ export default function Login() {
         ?.classList.add("hidden");
     }
 
-    if (document.querySelector(".signUp--password--input")?.value === "") {
+    if (passwordInput === "") {
       document
         .querySelector(".signUp--password--error")
         ?.classList.remove("hidden");
@@ -48,6 +74,32 @@ export default function Login() {
       document
         .querySelector(".signUp--password--error")
         ?.classList.add("hidden");
+    }
+  }
+
+  function handleLogin(e) {
+    e.preventDefault();
+
+    const userNameInput = document.querySelector(
+      ".login--username--input"
+    )?.value;
+    const passwordInput = document.querySelector(
+      ".login--password--input"
+    )?.value;
+
+    if (userNameInput !== "" && passwordInput !== "") {
+      if (
+        user.find(
+          (user) =>
+            user.userName === userNameInput && user.password === passwordInput
+        )
+      ) {
+        document.querySelector(".login--error")?.classList.add("hidden");
+        document.querySelector(".login--error")?.classList.remove("flex");
+      } else {
+        document.querySelector(".login--error")?.classList.remove("hidden");
+        document.querySelector(".login--error")?.classList.add("flex");
+      }
     }
   }
 
@@ -59,11 +111,11 @@ export default function Login() {
             type="text"
             placeholder="UserName"
             id="username"
-            className="peer signUp--username--input h-12 w-full rounded-full mt-24 bg-zinc-600 border-2 border-zinc-500 focus:outline-none placeholder-transparent indent-5"
+            className="peer signUp--username--input h-12 w-full rounded-full mt-24 bg-zinc-600 border-2 border-zinc-500 focus:outline-none placeholder-transparent placeholder:select-none indent-5"
           />
           <label
             htmlFor="username"
-            className="absolute left-4 top-[75%] font-semibold text-white opacity-80  peer-focus:top-[49%] transition-all duration-500 peer-[:not(:placeholder-shown)]:top-[50%] select-none"
+            className="absolute left-4 top-[75%] font-semibold text-white opacity-80  peer-focus:top-[49%] transition-all duration-500 peer-[:not(:placeholder-shown)]:top-[50%] select-none pointer-events-none"
           >
             UserName
           </label>
@@ -79,11 +131,11 @@ export default function Login() {
             type="text"
             placeholder="password"
             id="password"
-            className="peer signUp--password--input h-12 w-full rounded-full bg-zinc-600 border-2 border-zinc-500 focus:outline-none placeholder-transparent indent-5"
+            className="peer signUp--password--input h-12 w-full rounded-full bg-zinc-600 border-2 border-zinc-500 focus:outline-none placeholder-transparent placeholder:select-none indent-5"
           />
           <label
             htmlFor="password"
-            className="absolute left-4 top-[25%] font-semibold text-white opacity-80  peer-focus:-top-6 transition-all duration-500 peer-[:not(:placeholder-shown)]:-top-6 select-none"
+            className="absolute left-4 top-[25%] font-semibold text-white opacity-80  peer-focus:-top-6 transition-all duration-500 peer-[:not(:placeholder-shown)]:-top-6 select-none pointer-events-none"
           >
             Password
           </label>
@@ -94,24 +146,32 @@ export default function Login() {
             Please enter a password
           </label>
         </div>
-        <button
-          onClick={handleSignUp}
-          className=" h-12 rounded-full font-semibold border-2 border-orange-400 hover:bg-orange-500 hover:text-black transition-all duration-500"
-        >
-          Sign Up
-        </button>
+        <div className="flex flex-col">
+          <button
+            onClick={handleSignUp}
+            className="signUp--button h-12 rounded-full font-semibold border-2 border-orange-400 hover:bg-orange-500 hover:text-black transition-all duration-500"
+          >
+            Sign Up
+          </button>
+          <label
+            htmlFor="signUp--button"
+            className="signUp--username--taken hidden justify-center mt-3 text-red-500"
+          >
+            This User name is already taken
+          </label>
+        </div>
       </div>
       <div className="w-6/12 h-[38rem] gap-y-11 flex flex-col mr-10">
         <div className="relative">
           <input
             type="text"
             id="username"
-            className="peer h-12 w-full rounded-full mt-24 bg-zinc-600 border-2 border-zinc-500 focus:outline-none placeholder-transparent indent-4"
+            className="login--username--input peer h-12 w-full rounded-full mt-24 bg-zinc-600 border-2 border-zinc-500 focus:outline-none placeholder-transparent placeholder:select-none indent-5"
             placeholder="UserName"
           />
           <label
             htmlFor="username"
-            className="absolute left-4 top-[75%] font-semibold text-white opacity-80  peer-focus:top-[49%] transition-all duration-500 peer-[:not(:placeholder-shown)]:top-[50%] select-none"
+            className="absolute left-4 top-[75%] font-semibold text-white opacity-80  peer-focus:top-[49%] transition-all duration-500 peer-[:not(:placeholder-shown)]:top-[50%] select-none pointer-events-none"
           >
             UserName
           </label>
@@ -121,18 +181,29 @@ export default function Login() {
             type="text"
             id="password"
             placeholder="Password"
-            className="peer h-12 w-full rounded-full bg-zinc-600 border-2 border-zinc-500 focus:outline-none indent-5 placeholder-transparent"
+            className="login--password--input peer h-12 w-full rounded-full bg-zinc-600 border-2 border-zinc-500 focus:outline-none indent-5 placeholder-transparent placeholder:select-none"
           />
           <label
             htmlFor="password"
-            className="absolute left-4 top-[25%] font-semibold text-white opacity-80  peer-focus:-top-6 transition-all duration-500 peer-[:not(:placeholder-shown)]:-top-6 select-none"
+            className="absolute left-4 top-[25%] font-semibold text-white opacity-80  peer-focus:-top-6 transition-all duration-500 peer-[:not(:placeholder-shown)]:-top-6 select-none pointer-events-none"
           >
             Password
           </label>
         </div>
-        <button className=" h-12 rounded-full font-semibold border-2 border-orange-400 hover:bg-orange-500 hover:text-black transition-all duration-500">
-          Log In
-        </button>
+        <div className="flex flex-col">
+          <button
+            onClick={handleLogin}
+            className="login--button h-12 rounded-full font-semibold border-2 border-orange-400 hover:bg-orange-500 hover:text-black transition-all duration-500"
+          >
+            Log In
+          </button>
+          <label
+            htmlFor="login--button"
+            className="login--error hidden justify-center mt-3 text-red-500"
+          >
+            Incorrect username or password
+          </label>
+        </div>
       </div>
       <div className="info--container w-6/12 h-[38rem] bg-zinc-600 border-2 border-zinc-500 rounded-[40px] ml-2 flex items-center justify-between flex-col z-10 transition-all ease-out absolute ">
         <div className="flex justify-center items-center flex-col mt-36">
