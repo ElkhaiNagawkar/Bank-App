@@ -1,8 +1,15 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [signOrLog, setSignOrLog] = React.useState(false);
   const [user, setUser] = React.useState([]);
+
+  const navigate = useNavigate();
+  function changeRoute() {
+    const path = "Homepage";
+    navigate(path);
+  }
 
   function handleSignLog(e) {
     e.preventDefault();
@@ -53,6 +60,8 @@ export default function Login() {
         document
           .querySelector(".signUp--username--taken")
           ?.classList.remove("flex");
+
+        changeRoute();
       }
     }
 
@@ -96,6 +105,7 @@ export default function Login() {
       ) {
         document.querySelector(".login--error")?.classList.add("hidden");
         document.querySelector(".login--error")?.classList.remove("flex");
+        changeRoute();
       } else {
         document.querySelector(".login--error")?.classList.remove("hidden");
         document.querySelector(".login--error")?.classList.add("flex");
@@ -104,133 +114,135 @@ export default function Login() {
   }
 
   return (
-    <div className="bg-zinc-700 w-6/12 h-4/6 rounded-[50px] border-2 border-orange-500 flex items-center gap-x-32 text-white relative">
-      <div className="w-6/12 h-[38rem] gap-y-11 flex flex-col ml-10">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="UserName"
-            id="username"
-            className="peer signUp--username--input h-12 w-full rounded-full mt-24 bg-zinc-600 border-2 border-zinc-500 focus:outline-none placeholder-transparent placeholder:select-none indent-5"
-          />
-          <label
-            htmlFor="username"
-            className="absolute left-4 top-[75%] font-semibold text-white opacity-80  peer-focus:top-[49%] transition-all duration-500 peer-[:not(:placeholder-shown)]:top-[50%] select-none pointer-events-none"
-          >
-            UserName
-          </label>
-          <label
-            htmlFor="username"
-            className="signUp--username--error absolute left-4 top-full font-semibold text-red-500 opacity-80 hidden text-xs"
-          >
-            Please enter a username
-          </label>
-        </div>
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="password"
-            id="password"
-            className="peer signUp--password--input h-12 w-full rounded-full bg-zinc-600 border-2 border-zinc-500 focus:outline-none placeholder-transparent placeholder:select-none indent-5"
-          />
-          <label
-            htmlFor="password"
-            className="absolute left-4 top-[25%] font-semibold text-white opacity-80  peer-focus:-top-6 transition-all duration-500 peer-[:not(:placeholder-shown)]:-top-6 select-none pointer-events-none"
-          >
-            Password
-          </label>
-          <label
-            htmlFor="password"
-            className="signUp--password--error absolute left-4 top-full font-semibold text-red-500 opacity-80 hidden text-xs"
-          >
-            Please enter a password
-          </label>
-        </div>
-        <div className="flex flex-col">
-          <button
-            onClick={handleSignUp}
-            className="signUp--button h-12 rounded-full font-semibold border-2 border-orange-400 hover:bg-orange-500 hover:text-black transition-all duration-500"
-          >
-            Sign Up
-          </button>
-          <label
-            htmlFor="signUp--button"
-            className="signUp--username--taken hidden justify-center mt-3 text-red-500"
-          >
-            This User name is already taken
-          </label>
-        </div>
-      </div>
-      <div className="w-6/12 h-[38rem] gap-y-11 flex flex-col mr-10">
-        <div className="relative">
-          <input
-            type="text"
-            id="username"
-            className="login--username--input peer h-12 w-full rounded-full mt-24 bg-zinc-600 border-2 border-zinc-500 focus:outline-none placeholder-transparent placeholder:select-none indent-5"
-            placeholder="UserName"
-          />
-          <label
-            htmlFor="username"
-            className="absolute left-4 top-[75%] font-semibold text-white opacity-80  peer-focus:top-[49%] transition-all duration-500 peer-[:not(:placeholder-shown)]:top-[50%] select-none pointer-events-none"
-          >
-            UserName
-          </label>
-        </div>
-        <div className="relative">
-          <input
-            type="text"
-            id="password"
-            placeholder="Password"
-            className="login--password--input peer h-12 w-full rounded-full bg-zinc-600 border-2 border-zinc-500 focus:outline-none indent-5 placeholder-transparent placeholder:select-none"
-          />
-          <label
-            htmlFor="password"
-            className="absolute left-4 top-[25%] font-semibold text-white opacity-80  peer-focus:-top-6 transition-all duration-500 peer-[:not(:placeholder-shown)]:-top-6 select-none pointer-events-none"
-          >
-            Password
-          </label>
-        </div>
-        <div className="flex flex-col">
-          <button
-            onClick={handleLogin}
-            className="login--button h-12 rounded-full font-semibold border-2 border-orange-400 hover:bg-orange-500 hover:text-black transition-all duration-500"
-          >
-            Log In
-          </button>
-          <label
-            htmlFor="login--button"
-            className="login--error hidden justify-center mt-3 text-red-500"
-          >
-            Incorrect username or password
-          </label>
-        </div>
-      </div>
-      <div className="info--container w-6/12 h-[38rem] bg-zinc-600 border-2 border-zinc-500 rounded-[40px] ml-2 flex items-center justify-between flex-col z-10 transition-all ease-out absolute ">
-        <div className="flex justify-center items-center flex-col mt-36">
-          <div className="overflow-hidden h-14 w-36 relative flex justify-center items-center">
-            <p className="signUp--header text-4xl w-36 font-extrabold absolute -translate-x-36 transition-all duration-500">
+    <div className="w-screen h-screen flex justify-center items-center">
+      <div className="bg-zinc-700 w-6/12 h-4/6 rounded-[50px] border-2 border-orange-500 flex items-center gap-x-32 text-white relative ">
+        <div className="w-6/12 h-[38rem] gap-y-11 flex flex-col ml-10">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="UserName"
+              id="username"
+              className="peer signUp--username--input h-12 w-full rounded-full mt-24 bg-zinc-600 border-2 border-zinc-500 focus:outline-none placeholder-transparent placeholder:select-none indent-5"
+            />
+            <label
+              htmlFor="username"
+              className="absolute left-4 top-[75%] font-semibold text-white opacity-80  peer-focus:top-[49%] transition-all duration-500 peer-[:not(:placeholder-shown)]:top-[50%] select-none pointer-events-none"
+            >
+              UserName
+            </label>
+            <label
+              htmlFor="username"
+              className="signUp--username--error absolute left-4 top-full font-semibold text-red-500 opacity-80 hidden text-xs"
+            >
+              Please enter a username
+            </label>
+          </div>
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="password"
+              id="password"
+              className="peer signUp--password--input h-12 w-full rounded-full bg-zinc-600 border-2 border-zinc-500 focus:outline-none placeholder-transparent placeholder:select-none indent-5"
+            />
+            <label
+              htmlFor="password"
+              className="absolute left-4 top-[25%] font-semibold text-white opacity-80  peer-focus:-top-6 transition-all duration-500 peer-[:not(:placeholder-shown)]:-top-6 select-none pointer-events-none"
+            >
+              Password
+            </label>
+            <label
+              htmlFor="password"
+              className="signUp--password--error absolute left-4 top-full font-semibold text-red-500 opacity-80 hidden text-xs"
+            >
+              Please enter a password
+            </label>
+          </div>
+          <div className="flex flex-col">
+            <button
+              onClick={handleSignUp}
+              className="signUp--button h-12 rounded-full font-semibold border-2 border-orange-400 hover:bg-orange-500 hover:text-black transition-all duration-500"
+            >
               Sign Up
-            </p>
-            <p className="login--header text-4xl font-extrabold absolute transition-all duration-500">
-              Login
+            </button>
+            <label
+              htmlFor="signUp--button"
+              className="signUp--username--taken hidden justify-center mt-3 text-red-500"
+            >
+              This User name is already taken
+            </label>
+          </div>
+        </div>
+        <div className="w-6/12 h-[38rem] gap-y-11 flex flex-col mr-10">
+          <div className="relative">
+            <input
+              type="text"
+              id="username"
+              className="login--username--input peer h-12 w-full rounded-full mt-24 bg-zinc-600 border-2 border-zinc-500 focus:outline-none placeholder-transparent placeholder:select-none indent-5"
+              placeholder="UserName"
+            />
+            <label
+              htmlFor="username"
+              className="absolute left-4 top-[75%] font-semibold text-white opacity-80  peer-focus:top-[49%] transition-all duration-500 peer-[:not(:placeholder-shown)]:top-[50%] select-none pointer-events-none"
+            >
+              UserName
+            </label>
+          </div>
+          <div className="relative">
+            <input
+              type="text"
+              id="password"
+              placeholder="Password"
+              className="login--password--input peer h-12 w-full rounded-full bg-zinc-600 border-2 border-zinc-500 focus:outline-none indent-5 placeholder-transparent placeholder:select-none"
+            />
+            <label
+              htmlFor="password"
+              className="absolute left-4 top-[25%] font-semibold text-white opacity-80  peer-focus:-top-6 transition-all duration-500 peer-[:not(:placeholder-shown)]:-top-6 select-none pointer-events-none"
+            >
+              Password
+            </label>
+          </div>
+          <div className="flex flex-col">
+            <button
+              onClick={handleLogin}
+              className="login--button h-12 rounded-full font-semibold border-2 border-orange-400 hover:bg-orange-500 hover:text-black transition-all duration-500"
+            >
+              Log In
+            </button>
+            <label
+              htmlFor="login--button"
+              className="login--error hidden justify-center mt-3 text-red-500"
+            >
+              Incorrect username or password
+            </label>
+          </div>
+        </div>
+        <div className="info--container w-6/12 h-[38rem] bg-zinc-600 border-2 border-zinc-500 rounded-[40px] ml-2 flex items-center justify-between flex-col z-10 transition-all ease-out absolute ">
+          <div className="flex justify-center items-center flex-col mt-36">
+            <div className="overflow-hidden h-14 w-36 relative flex justify-center items-center">
+              <p className="signUp--header text-4xl w-36 font-extrabold absolute -translate-x-36 transition-all duration-500">
+                Sign Up
+              </p>
+              <p className="login--header text-4xl font-extrabold absolute transition-all duration-500">
+                Login
+              </p>
+            </div>
+            <p className="font-semibold">
+              {signOrLog
+                ? "Welcome! Please sign up to create your account."
+                : "Welcome Back! Please log in to access your account."}
             </p>
           </div>
-          <p className="font-semibold">
-            {signOrLog
-              ? "Welcome! Please sign up to create your account."
-              : "Welcome Back! Please log in to access your account."}
-          </p>
-        </div>
-        <div className="flex justify-center items-center flex-col">
-          <p className="font-semibold mb-5">
-            {signOrLog ? "Already got an account?" : "Don't have an account?"}
-          </p>
-          <button
-            onClick={handleSignLog}
-            className="border-2 border-orange-400 w-11/12 mb-5 h-10 rounded-full font-semibold hover:bg-orange-500 hover:text-black transition-all duration-500"
-          >
-            {signOrLog ? "Log In" : "Sign Up"}
-          </button>
+          <div className="flex justify-center items-center flex-col">
+            <p className="font-semibold mb-5">
+              {signOrLog ? "Already got an account?" : "Don't have an account?"}
+            </p>
+            <button
+              onClick={handleSignLog}
+              className="border-2 border-orange-400 w-11/12 mb-5 h-10 rounded-full font-semibold hover:bg-orange-500 hover:text-black transition-all duration-500"
+            >
+              {signOrLog ? "Log In" : "Sign Up"}
+            </button>
+          </div>
         </div>
       </div>
     </div>
