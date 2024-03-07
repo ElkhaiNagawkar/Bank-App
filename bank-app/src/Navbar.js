@@ -5,23 +5,23 @@ import { VscAccount } from "react-icons/vsc";
 
 export default function Navbar() {
   return (
-    <div className="group flex w-20 h-80 rounded-e-[25px] bg-zinc-600 border-[3px] border-s-transparent border-e-orange-400 border-t-orange-400 border-b-orange-400 hover:w-48 transition-all">
-      <div className="w-full h-full flex flex-col justify-evenly items-center transition-all duration-1000">
-        <div className="w-[2.6rem] flex items-center gap-x-3 group-hover:w-32 transition-all duration-1000">
+    <div className="group flex w-24 h-72 rounded-e-[50px] bg-zinc-600 border-2 border-s-transparent border-e-orange-400 border-t-orange-400 border-b-orange-400 hover:w-56 transition-all col-span-1 shadow-[0_8px_30px_rgb(251,146,60,0.16)]">
+      <div className="w-full h-full flex flex-col justify-evenly items-center">
+        <div className="w-full flex items-center justify-center gap-x-3">
           <TiHome className="w-10 h-20" />
-          <p className="hidden group-hover:block text-2xl font-semibold ">
+          <p className="hidden group-hover:block text-2xl font-semibold">
             Home
           </p>
         </div>
-        <div className="w-[2.6rem] flex items-center gap-x-3 group-hover:w-32 transition-all duration-1000">
+        <div className="w-full flex items-center justify-center gap-x-3">
           <HiMiniCreditCard className="w-10 h-20" />
           <p className="hidden group-hover:block text-2xl font-semibold ">
             Cards
           </p>
         </div>
-        <div className="w-[2.6rem] flex items-center gap-x-3 group-hover:w-36 transition-all duration-1000 ml-1">
+        <div className="w-full flex items-center justify-center gap-x-3 group-hover:ml-5">
           <VscAccount className="w-10 h-20" />
-          <p className="hidden group-hover:block text-2xl font-semibold ">
+          <p className="hidden group-hover:block text-2xl font-semibold">
             Account
           </p>
         </div>

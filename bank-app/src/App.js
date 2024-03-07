@@ -22,7 +22,7 @@ export default function App() {
       <Routes>
         <Route path="/" index element={<Login />} />
       </Routes>
-      <div className="homepage--container items-center h-screen">
+      <div className="homepage--container items-center h-screen grid grid-cols-10">
         <Navbar />
         <Routes>
           <Route path="/Homepage" element={<Homepage />} />
