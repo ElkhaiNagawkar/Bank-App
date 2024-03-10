@@ -1,8 +1,9 @@
+import { useEffect } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Login from "./Login";
 import Homepage from "./Homepage";
 import Navbar from "./Navbar";
-import { useEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import CardsPage from "./CardsPage";
 
 export default function App() {
   const location = useLocation();
@@ -26,6 +27,7 @@ export default function App() {
         <Navbar />
         <Routes>
           <Route path="/Homepage" element={<Homepage />} />
+          <Route path="/CardsPage" element={<CardsPage />} />
         </Routes>
       </div>
     </div>

@@ -1,6 +1,14 @@
 import React from "react";
 
 export default function Homepage() {
+  const [allUsers, setUsers] = React.useState(
+    localStorage["allUsers"] ? JSON.parse(localStorage.getItem("allUsers")) : []
+  );
+
+  const loggedInUser = allUsers.find((user) => {
+    return user.loggedIn === true;
+  });
+
   return (
     <div
       className="bg-zinc-600 w-10/12 h-5/6 col-span-9 ml-20 rounded-[50px] border-2 border-orange-400 border-opacity-20 
@@ -11,7 +19,7 @@ export default function Homepage() {
           Overview
         </p>
         <p className="font-bold text-3xl text-orange-400 mr-10">
-          Welcome back Elkhai!
+          Welcome back {loggedInUser.userName}!
         </p>
       </div>
       <div className="grid grid-cols-12 grid-rows-12 grid-flow-col row-span-7 ml-5 mr-5 mb-5 gap-y-3 gap-x-4">

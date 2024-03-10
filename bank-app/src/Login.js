@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [signOrLog, setSignOrLog] = React.useState(false);
-  const [user, setUser] = React.useState([]);
+  const [user, setUser] = React.useState(
+    localStorage["allUsers"] ? JSON.parse(localStorage.getItem("allUsers")) : []
+  );
 
   const navigate = useNavigate();
   function changeRoute() {
@@ -42,7 +44,7 @@ export default function Login() {
     )?.value;
 
     if (userNameInput !== "" && passwordInput !== "") {
-      if (user.find((user) => user.userName === userNameInput)) {
+      if (user?.find((user) => user.userName === userNameInput)) {
         document
           .querySelector(".signUp--username--taken")
           ?.classList.remove("hidden");
@@ -53,6 +55,8 @@ export default function Login() {
         user?.push({
           userName: userNameInput,
           password: passwordInput,
+          creditCard: [],
+          loggedIn: false,
         });
         document
           .querySelector(".signUp--username--taken")
@@ -60,6 +64,7 @@ export default function Login() {
         document
           .querySelector(".signUp--username--taken")
           ?.classList.remove("flex");
+        localStorage.setItem("allUsers", JSON.stringify(user));
 
         changeRoute();
       }
@@ -97,14 +102,17 @@ export default function Login() {
     )?.value;
 
     if (userNameInput !== "" && passwordInput !== "") {
-      if (
-        user.find(
-          (user) =>
-            user.userName === userNameInput && user.password === passwordInput
-        )
-      ) {
+      const index = user?.findIndex(
+        (user) =>
+          user.userName === userNameInput && user.password === passwordInput
+      );
+      if (index === 0 || index) {
         document.querySelector(".login--error")?.classList.add("hidden");
         document.querySelector(".login--error")?.classList.remove("flex");
+        setUser((user[index].loggedIn = true));
+        console.log(user[index]);
+        localStorage.setItem("allUsers", JSON.stringify(user));
+
         changeRoute();
       } else {
         document.querySelector(".login--error")?.classList.remove("hidden");
