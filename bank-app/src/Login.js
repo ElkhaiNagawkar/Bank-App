@@ -204,7 +204,7 @@ export default function Login() {
             />
             <label
               htmlFor="password"
-              className="absolute left-4 top-[25%] font-semibold text-white opacity-80  peer-focus:-top-6 transition-all duration-500 peer-[:not(:placeholder-shown)]:-top-6 select-none pointer-events-none"
+              className="absolute left-4 top-[25%] font-semibold text-white opacity-80 peer-focus:-top-6 transition-all duration-500 peer-[:not(:placeholder-shown)]:-top-6 select-none pointer-events-none"
             >
               Password
             </label>
