@@ -19,7 +19,7 @@ export default function Homepage() {
           Overview
         </p>
         <p className="font-bold text-3xl text-orange-400 mr-10">
-          Welcome back {user.userName}!
+          Welcome back {user?.userName}!
         </p>
       </div>
       <div className="grid grid-cols-12 grid-rows-12 grid-flow-col row-span-7 ml-5 mr-5 mb-5 gap-y-3 gap-x-4">

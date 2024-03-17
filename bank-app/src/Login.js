@@ -56,7 +56,7 @@ export default function Login() {
           userName: userNameInput,
           password: passwordInput,
           creditCard: [],
-          loggedIn: false,
+          loggedIn: true,
         });
         document
           .querySelector(".signUp--username--taken")

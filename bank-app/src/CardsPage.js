@@ -1,5 +1,6 @@
 import React from "react";
 import { IoMdArrowRoundDown } from "react-icons/io";
+import { v4 as uuidv4 } from "uuid";
 
 export default function CardsPage() {
   // const [menuOpen, setMenuOpen] = React.useState(false);
@@ -7,15 +8,16 @@ export default function CardsPage() {
     localStorage["allUsers"] ? JSON.parse(localStorage.getItem("allUsers")) : []
   );
 
-  const user = allUsers.find((user) => {
-    return user.loggedIn === true;
-  });
+  const [user, setUser] = React.useState(
+    allUsers.find((user) => {
+      return user.loggedIn === true;
+    })
+  );
 
-  function validateCreditCard(name, number, expiry, csv) {
+  function validateCreditCard(name, number, expiry) {
     const cardHolderName = document.querySelector(".card--holder--name");
     const cardNumber = document.querySelector(".card--number");
     const cardExpiry = document.querySelector(".card--expiry");
-    const cardCsv = document.querySelector(".card--csv");
     let cardPass = true;
 
     if (!cardHolderName?.checkValidity() || name === "") {
@@ -45,23 +47,46 @@ export default function CardsPage() {
       document.querySelector(".wrong--credit--expiry")?.classList.add("hidden");
     }
 
-    if (!cardCsv?.checkValidity() || csv === "") {
-      document.querySelector(".wrong--credit--csv")?.classList.remove("hidden");
-      cardPass = false;
-    } else {
-      document.querySelector(".wrong--credit--csv")?.classList.add("hidden");
-    }
-
     return cardPass;
   }
 
   function handleAddCard() {
+    if (user.creditCard.length === 8) {
+      document.querySelector(".maximum--cards")?.classList.remove("hidden");
+      return;
+    } else {
+      document.querySelector(".maximum--cards")?.classList.add("hidden");
+    }
+
     const name = document.querySelector(".card--holder--name")?.value;
     const number = document.querySelector(".card--number")?.value;
     const expiry = document.querySelector(".card--expiry")?.value;
-    const csv = document.querySelector(".card--csv")?.value;
 
-    const cardValidated = validateCreditCard(name, number, expiry, csv);
+    const cardValidated = validateCreditCard(name, number, expiry);
+
+    if (cardValidated) {
+      const newCard = {
+        key: uuidv4(),
+        cardHolderName: name,
+        cardNumber: number,
+        cardExpiry: expiry,
+      };
+
+      setUser({
+        userName: user.userName,
+        password: user.password,
+        loggerIn: user.loggedIn,
+        creditCard: [...user.creditCard, newCard],
+      });
+
+      allUsers.find((user) => {
+        if (user.loggedIn) {
+          user.creditCard.push(newCard);
+        }
+      });
+
+      localStorage.setItem("allUsers", JSON.stringify(allUsers));
+    }
   }
 
   return (
@@ -76,7 +101,28 @@ export default function CardsPage() {
       </div>
 
       <div className="flex w-full h-5/6 px-5 gap-x-10">
-        <div className="bg-zinc-400 w-6/12 h-full rounded-[50px] border-2 border-orange-400 border-opacity-40"></div>
+        <div className="bg-zinc-400 w-6/12 h-full rounded-[50px] border-2 border-orange-400 border-opacity-40">
+          <ul className="w-full font-extrabold text-xl flex justify-between mt-6 pb-6 border-b-2 border-zinc-700 border-opacity-80">
+            <li className="ml-16">Name</li>
+            <li>Number</li>
+            <li className="mr-16">Expiry</li>
+          </ul>
+          {user.creditCard.map(({ cardHolderName, cardNumber, cardExpiry }) => {
+            return (
+              <div className="border-b-2 border-opacity-45 border-zinc-600 pb-4">
+                <div className="ml-8 mt-5 mr-8 flex justify-between">
+                  <p className="font-[600] text-[1.1rem] w-36">
+                    {cardHolderName}
+                  </p>
+                  <p className="font-[600] text-[1.1rem] -ml-20">
+                    Ending with {cardNumber.slice(12)}
+                  </p>
+                  <p className="font-[600] text-[1.1rem] mr-12">{cardExpiry}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
         <div className="w-6/12 h-full grid grid-cols-6 grid-rows-8 relative gap-x-5 gap-y-12">
           <p className="text-4xl h-10 font-bold text-orange-400 col-span-6">
             Add a Card:
@@ -159,47 +205,32 @@ export default function CardsPage() {
               Wrong Input
             </label>
           </div>
-          <div className="relative col-span-3">
-            <input
-              type="tel"
-              id="csv"
-              placeholder="CSV"
-              maxLength={3}
-              minLength={3}
-              pattern="^[0-9]*$"
-              className="peer card--csv w-full h-12 rounded-full text-white bg-zinc-600 border-2 border-zinc-500 focus:outline-none placeholder-transparent placeholder:select-none indent-5 col-span-1"
-            />
-            <label
-              htmlFor="csv"
-              className="absolute left-4 top-3 font-semibold text-white opacity-80 peer-focus:-top-6 transition-all duration-500 peer-[:not(:placeholder-shown)]:-top-6 select-none pointer-events-none"
-            >
-              CSV
-            </label>
-            <label
-              htmlFor="csv"
-              className="wrong--credit--csv text-xs absolute left-52 top-[3.1rem] font-semibold text-red-500 opacity-80 select-none pointer-events-none hidden"
-            >
-              Wrong Input
-            </label>
-          </div>
-          <div className="relative col-start-3 col-span-2">
+          <div className="relative col-start-4 col-span-3 row-start-3">
             <button
               onClick={handleAddCard}
-              className="w-full bg-gradient-to-tr from-green-500 to-teal-500 rounded-full py-2"
+              id="addCardButton"
+              className="w-full  bg-gradient-to-tr from-green-500 to-teal-500 rounded-full py-2"
             >
               Add Card
             </button>
+            <label
+              htmlFor="addCardButton"
+              className="maximum--cards text-xs text-red-500 ml-4 absolute left-0 top-[2.7rem] text-pretty hidden"
+            >
+              Reached maximum number of cards. Plase remove a card.
+            </label>
           </div>
-          <div className="row-start-6 col-span-8">
+          <div className="row-start-5 col-span-8">
             <p className="text-4xl h-10 font-bold text-orange-400 col-span-6">
               Delete a Card:
             </p>
           </div>
-          {/* <div className="row-start-7 col-span-8">
-            <div className="bg-zinc-500 w-1/2 h-12 rounded-full flex items-center justify-end">
-              <IoMdArrowRoundDown className="mr-3 text-white h-full w-6" />
+          <div className="row-start-6 col-span-8 relative">
+            <div className="bg-zinc-500 w-1/2 h-12 row-start-7 rounded-full flex items-center justify-end">
+              <IoMdArrowRoundDown className="mr-3 text-white h-full w-6 absolute pointer-events-none" />
             </div>
-          </div> */}
+            {/* <div className="bg-white h-2 w-16 row-start-8"></div> */}
+          </div>
         </div>
       </div>
     </div>
