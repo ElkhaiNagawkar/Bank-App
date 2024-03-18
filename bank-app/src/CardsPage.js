@@ -3,7 +3,7 @@ import { IoMdArrowRoundDown } from "react-icons/io";
 import { v4 as uuidv4 } from "uuid";
 
 export default function CardsPage() {
-  // const [menuOpen, setMenuOpen] = React.useState(false);
+  const [menuOpen, setMenuOpen] = React.useState(false);
   const [allUsers, setUsers] = React.useState(
     localStorage["allUsers"] ? JSON.parse(localStorage.getItem("allUsers")) : []
   );
@@ -89,6 +89,27 @@ export default function CardsPage() {
     }
   }
 
+  function handleSelect(cardNumber) {
+    if ((document.querySelector(".selection").innerHTML = "")) {
+      return;
+    }
+
+    document.querySelector(
+      ".selection"
+    ).innerHTML = `Ending with ${cardNumber?.slice(12)}`;
+    setMenuOpen(!menuOpen);
+  }
+
+  function handleDelete() {
+    const cardToDelete = document
+      .querySelector(".selection")
+      .innerHTML.slice(12);
+    const cardIndex = user.creditCard.findIndex((card) => {
+      return card.cardNumber.slice(12) === cardToDelete;
+    });
+    document.querySelector(".selection").innerHTML = "";
+  }
+
   return (
     <div
       className="bg-zinc-600 w-10/12 h-5/6 col-span-9 ml-20 rounded-[50px] border-2 border-orange-400 border-opacity-20 
@@ -115,7 +136,7 @@ export default function CardsPage() {
                     {cardHolderName}
                   </p>
                   <p className="font-[600] text-[1.1rem] -ml-20">
-                    Ending with {cardNumber.slice(12)}
+                    Ending with {cardNumber?.slice(12)}
                   </p>
                   <p className="font-[600] text-[1.1rem] mr-12">{cardExpiry}</p>
                 </div>
@@ -123,11 +144,11 @@ export default function CardsPage() {
             );
           })}
         </div>
-        <div className="w-6/12 h-full grid grid-cols-6 grid-rows-8 relative gap-x-5 gap-y-12">
-          <p className="text-4xl h-10 font-bold text-orange-400 col-span-6">
+        <div className="w-6/12 h-full grid grid-cols-12 grid-rows-8 relative gap-x-5 gap-y-12 pr-7">
+          <p className="text-4xl h-10 font-bold text-orange-400 col-span-12">
             Add a Card:
           </p>
-          <div className="relative col-span-3">
+          <div className="relative col-span-6">
             <input
               type="text"
               id="cardHolderName"
@@ -149,7 +170,7 @@ export default function CardsPage() {
               Must include only letters/longer then 3 characters
             </label>
           </div>
-          <div className="relative col-span-3">
+          <div className="relative col-span-6">
             <input
               type="tel"
               id="cardNumber"
@@ -177,7 +198,7 @@ export default function CardsPage() {
               Wrong Input
             </label>
           </div>
-          <div className="relative col-span-3">
+          <div className="relative col-span-6">
             <input
               type="tel"
               id="Expiry"
@@ -205,11 +226,11 @@ export default function CardsPage() {
               Wrong Input
             </label>
           </div>
-          <div className="relative col-start-4 col-span-3 row-start-3">
+          <div className="relative col-start-7 col-span-6 row-start-3">
             <button
               onClick={handleAddCard}
               id="addCardButton"
-              className="w-full  bg-gradient-to-tr from-green-500 to-teal-500 rounded-full py-2"
+              className="w-full h-12 bg-gradient-to-tr from-green-500 to-teal-500 rounded-full py-2 font-semibold"
             >
               Add Card
             </button>
@@ -221,15 +242,42 @@ export default function CardsPage() {
             </label>
           </div>
           <div className="row-start-5 col-span-8">
-            <p className="text-4xl h-10 font-bold text-orange-400 col-span-6">
+            <p className="text-4xl h-10 font-bold text-orange-400 col-span-6 select-none">
               Delete a Card:
             </p>
           </div>
-          <div className="row-start-6 col-span-8 relative">
-            <div className="bg-zinc-500 w-1/2 h-12 row-start-7 rounded-full flex items-center justify-end">
+          <div className="row-start-6 col-span-6 relative">
+            <div
+              className="bg-zinc-500 w-full h-12 rounded-full flex items-center justify-end"
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
               <IoMdArrowRoundDown className="mr-3 text-white h-full w-6 absolute pointer-events-none" />
+              <p className="selection absolute left-5 font-[600] text-white opacity-80 select-none"></p>
             </div>
-            {/* <div className="bg-white h-2 w-16 row-start-8"></div> */}
+            {menuOpen && (
+              <div className="scroll bg-zinc-500 rounded-xl left-2 top-[3.6rem] h-44 w-72 row-start-8 absolute overflow-y-auto">
+                {user.creditCard.map(({ cardNumber }) => {
+                  return (
+                    <div
+                      className="flex justify-center mt-2 py-3 hover:bg-zinc-600 mx-4 rounded-[25px] text-white opacity-80"
+                      onClick={() => handleSelect(cardNumber)}
+                    >
+                      <p className="font-[600] select-none">
+                        Ending with {cardNumber.slice(12)}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+          <div className="row-start-6 col-start-7 col-span-6 h-full">
+            <button
+              className="bg-gradient-to-tl from-orange-400 to-red-400 py-2 w-full rounded-full font-semibold h-12 select-none"
+              onClick={handleDelete}
+            >
+              Delete Card
+            </button>
           </div>
         </div>
       </div>
