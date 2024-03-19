@@ -100,13 +100,33 @@ export default function CardsPage() {
     setMenuOpen(!menuOpen);
   }
 
-  function handleDelete() {
-    const cardToDelete = document
-      .querySelector(".selection")
-      .innerHTML.slice(12);
+  function handleDelete(cardToDelete) {
+    if (cardToDelete === "") {
+      return;
+    }
     const cardIndex = user.creditCard.findIndex((card) => {
       return card.cardNumber.slice(12) === cardToDelete;
     });
+
+    const newArr = user.creditCard?.filter((card) => {
+      return card?.cardNumber?.slice(12) !== cardToDelete;
+    });
+
+    setUser(() => ({
+      userName: user.userName,
+      password: user.password,
+      loggerIn: user.loggedIn,
+      creditCard: [...newArr],
+    }));
+
+    allUsers.find((user) => {
+      if (user.loggedIn) {
+        user.creditCard.splice(cardIndex, cardIndex + 1);
+      }
+    });
+
+    localStorage.setItem("allUsers", JSON.stringify(allUsers));
+
     document.querySelector(".selection").innerHTML = "";
   }
 
@@ -274,7 +294,11 @@ export default function CardsPage() {
           <div className="row-start-6 col-start-7 col-span-6 h-full">
             <button
               className="bg-gradient-to-tl from-orange-400 to-red-400 py-2 w-full rounded-full font-semibold h-12 select-none"
-              onClick={handleDelete}
+              onClick={() =>
+                handleDelete(
+                  document.querySelector(".selection")?.innerHTML.slice(12)
+                )
+              }
             >
               Delete Card
             </button>
