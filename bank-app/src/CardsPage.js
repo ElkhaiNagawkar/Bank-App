@@ -64,7 +64,13 @@ export default function CardsPage() {
 
     const cardValidated = validateCreditCard(name, number, expiry);
 
-    if (cardValidated) {
+    const cardRepeat = user.creditCard.find((card) => {
+      if (card.cardNumber.slice(12) === number.slice(12)) {
+        return true;
+      }
+    });
+
+    if (cardValidated && !cardRepeat) {
       const newCard = {
         key: uuidv4(),
         cardHolderName: name,
@@ -152,7 +158,7 @@ export default function CardsPage() {
             return (
               <div className="border-b-2 border-opacity-45 border-zinc-600 pb-4">
                 <div className="ml-8 mt-5 mr-8 flex justify-between">
-                  <p className="font-[600] text-[1.1rem] w-36">
+                  <p className="font-[600] text-[1.1rem] w-36 whitespace-nowrap">
                     {cardHolderName}
                   </p>
                   <p className="font-[600] text-[1.1rem] -ml-20">
@@ -256,9 +262,10 @@ export default function CardsPage() {
             </button>
             <label
               htmlFor="addCardButton"
-              className="maximum--cards text-xs text-red-500 ml-4 absolute left-0 top-[2.7rem] text-pretty hidden"
+              className="maximum--cards text-xs text-red-500 ml-4 absolute left-0 top-12 text-pretty hidden"
             >
-              Reached maximum number of cards. Plase remove a card.
+              Reached maximum number of cards or card already exists. Please
+              remove a card.
             </label>
           </div>
           <div className="row-start-5 col-span-8">

@@ -1,4 +1,5 @@
 import React from "react";
+import CardDropdown from "./HelperComponents/CardDropdown";
 
 export default function Homepage() {
   const [allUsers, setUsers] = React.useState(
@@ -23,19 +24,11 @@ export default function Homepage() {
         </p>
       </div>
       <div className="grid grid-cols-12 grid-rows-12 grid-flow-col row-span-7 ml-5 mr-5 mb-5 gap-y-3 gap-x-4">
-        <div className="col-span-3 row-span-6 rounded-[50px] bg-zinc-500 flex flex-col gap-y-10">
+        <div className="col-span-3 row-span-6 rounded-[50px] bg-zinc-500 flex flex-col gap-y-4">
           <p className="text-2xl font-bold ml-6 mt-7 text-orange-200">
             My Cards
           </p>
-          <div className="bg-gradient-to-tl from-orange-400 to-red-400 w-10/12 h-3/6 self-center rounded-xl flex flex-col">
-            <p className="font-bold ml-5 mt-16 self-center">
-              **** **** **** 4321
-            </p>
-            <p className="font-bold text-xl ml-5 mr-5 whitespace-nowrap line-clamp-1">
-              Elkhai Nagawkar
-            </p>
-            <p className="font-semibold  text-xs ml-5">01/01</p>
-          </div>
+          <CardDropdown />
         </div>
         <div className="col-span-3 row-span-6 rounded-[50px] bg-zinc-500 flex flex-col justify-evenly">
           <div>
