@@ -6,9 +6,41 @@ export default function Homepage() {
     localStorage["allUsers"] ? JSON.parse(localStorage.getItem("allUsers")) : []
   );
 
-  const user = allUsers.find((user) => {
-    return user.loggedIn === true;
-  });
+  const [user, setUser] = React.useState(
+    allUsers.find((user) => {
+      return user.loggedIn === true;
+    })
+  );
+
+  function handleDeposit() {
+    const deposit = document.querySelector(".deposit--input")?.value;
+    const card = document.querySelector(".selection").innerHTML;
+    const currentTime = new Date();
+
+    const newTransaction = {
+      depositAmount: deposit,
+      cardUsed: card,
+      time: `${currentTime.getDate()}/${
+        currentTime.getMonth() + 1
+      }/${currentTime.getFullYear()}`,
+    };
+
+    setUser({
+      userName: user.userName,
+      password: user.password,
+      creditCard: user.creditCard,
+      transactions: [...user.transactions, newTransaction],
+      loggerIn: user.loggedIn,
+    });
+
+    allUsers.find((user) => {
+      if (user.loggedIn) {
+        user.transactions.push(newTransaction);
+      }
+    });
+
+    localStorage.setItem("allUsers", JSON.stringify(allUsers));
+  }
 
   return (
     <div
@@ -42,10 +74,26 @@ export default function Homepage() {
             <p className="font-bold text-xl ml-5">Loan amount</p>
           </div>
         </div>
-        <div className="col-span-6 row-span-12 rounded-[50px] bg-zinc-500">
-          <p className="text-4xl font-bold ml-10 mt-7 text-orange-200">
+        <div className="col-span-6 row-span-12 rounded-[50px] bg-zinc-500 flex flex-col">
+          <p className="text-4xl font-bold ml-10 mt-7 mb-7 text-orange-200">
             Transactions
           </p>
+          <div className="w-[97%] h-[80%] bg-zinc-400 self-center rounded-[50px]">
+            <div className="flex justify-between px-12 py-5 font-bold text-2xl text-black text-opacity-80 border-b-2 w-full border-zinc-700 border-opacity-50 ">
+              <p>Card Used</p>
+              <p>Date</p>
+              <p>Amount</p>
+            </div>
+            {user.transactions.map(({ depositAmount, time, cardUsed }) => {
+              return (
+                <div className="text-black text-opacity-80 flex justify-between px-12 mt-6 pb-5 font-bold border-b-2 border-zinc-600 border-opacity-45 ">
+                  <p>{cardUsed}</p>
+                  <p className="-ml-12 w-16">{time}</p>
+                  <p className="mr-6 w-10">${depositAmount}</p>
+                </div>
+              );
+            })}
+          </div>
         </div>
         <div className="col-span-3 row-span-6 rounded-[50px] bg-zinc-500 flex flex-col justify-between">
           <div className="grid grid-cols-5 grid-rows-2 items-center mt-5">
@@ -53,11 +101,14 @@ export default function Homepage() {
               Deposit
             </p>
             <input
-              type="text"
+              type="number"
               placeholder="Amount"
-              className="text-white placeholder:text-white placeholder:text-opacity-30 rounded-full w-full h-4/6 ml-5 bg-zinc-600 border-2 border-zinc-400 focus:outline-none indent-5 col-span-3"
+              className="deposit--input appearance-none text-white placeholder:text-white placeholder:text-opacity-30 rounded-full w-full h-4/6 ml-5 bg-zinc-600 border-2 border-zinc-400 focus:outline-none indent-5 col-span-3"
             />
-            <button className="col-span-2 col-start-5 w-8/12 h-4/6 bg-gradient-to-tr from-green-500 to-teal-500 rounded-full text-xl font-extrabold">
+            <button
+              onClick={handleDeposit}
+              className="col-span-2 col-start-5 w-8/12 h-4/6 bg-gradient-to-tr from-green-500 to-teal-500 rounded-full text-xl font-extrabold"
+            >
               ➞
             </button>
           </div>

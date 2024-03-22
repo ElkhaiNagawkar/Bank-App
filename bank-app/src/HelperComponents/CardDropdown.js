@@ -45,7 +45,9 @@ export default function CardDropdown() {
           </p>
         </div>
       ) : (
-        <p>No cards</p>
+        <div className="h-36 flex justify-center items-center font-bold text-xl text-zinc-200 text-center">
+          <p>There are currently no cards to display here here</p>
+        </div>
       )}
 
       <div
@@ -59,7 +61,7 @@ export default function CardDropdown() {
             : `Ending with ${user.creditCard[0]?.cardNumber.slice(12)}`}
         </p>
         {menuOpen && (
-          <div className="scroll bg-zinc-400 rounded-xl left-8 top-[13.6rem] h-44 w-[13rem] row-start-8 absolute overflow-y-auto">
+          <div className="scroll bg-zinc-400 rounded-xl left-8 top-[13.5rem] h-44 w-[13.2rem] absolute overflow-y-auto">
             {user.creditCard.map(
               ({ cardHolderName, cardNumber, cardExpiry }) => {
                 return (

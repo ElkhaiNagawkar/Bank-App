@@ -56,6 +56,7 @@ export default function Login() {
           userName: userNameInput,
           password: passwordInput,
           creditCard: [],
+          transactions: [],
           loggedIn: true,
         });
         document

@@ -64,11 +64,9 @@ export default function CardsPage() {
 
     const cardValidated = validateCreditCard(name, number, expiry);
 
-    const cardRepeat = user.creditCard.find((card) => {
-      if (card.cardNumber.slice(12) === number.slice(12)) {
-        return true;
-      }
-    });
+    const cardRepeat = user.creditCard.find(
+      (card) => card.cardNumber.slice(12) === number.slice(12)
+    );
 
     if (cardValidated && !cardRepeat) {
       const newCard = {
@@ -81,8 +79,9 @@ export default function CardsPage() {
       setUser({
         userName: user.userName,
         password: user.password,
-        loggerIn: user.loggedIn,
         creditCard: [...user.creditCard, newCard],
+        transactions: user.transactions,
+        loggerIn: user.loggedIn,
       });
 
       allUsers.find((user) => {
@@ -121,8 +120,9 @@ export default function CardsPage() {
     setUser(() => ({
       userName: user.userName,
       password: user.password,
-      loggerIn: user.loggedIn,
       creditCard: [...newArr],
+      transactions: user.transactions,
+      loggerIn: user.loggedIn,
     }));
 
     allUsers.find((user) => {
