@@ -12,17 +12,71 @@ export default function Homepage() {
     })
   );
 
+  const [depositAmount, setDepositAmount] = React.useState(
+    document.querySelector(".deposit--input")?.value
+  );
+
   function handleDeposit() {
     const deposit = document.querySelector(".deposit--input")?.value;
+    setDepositAmount(deposit);
+
+    if (deposit <= 0 || deposit >= 10000000) {
+      document.querySelector(".deposit--error")?.classList.remove("hidden");
+      return;
+    } else {
+      document.querySelector(".deposit--error")?.classList.add("hidden");
+    }
+
     const card = document.querySelector(".selection").innerHTML;
     const currentTime = new Date();
 
     const newTransaction = {
       depositAmount: deposit,
+      cardUsed: "N/A",
+      time: `${currentTime.getDate()}/${
+        currentTime.getMonth() + 1
+      }/${currentTime.getFullYear()}`,
+      type: "Deposit",
+    };
+
+    setUser({
+      userName: user.userName,
+      password: user.password,
+      creditCard: user.creditCard,
+      transactions: [...user.transactions, newTransaction],
+      loggerIn: user.loggedIn,
+    });
+
+    allUsers.find((user) => {
+      if (user.loggedIn) {
+        user.transactions.push(newTransaction);
+      }
+    });
+
+    localStorage.setItem("allUsers", JSON.stringify(allUsers));
+  }
+
+  function handleExpense() {
+    const expense = document.querySelector(".expense--input")?.value;
+    // setDepositAmount(deposit);
+
+    // if (deposit <= 0 || deposit >= 10000000) {
+    //   document.querySelector(".deposit--error")?.classList.remove("hidden");
+    //   return;
+    // } else {
+    //   document.querySelector(".deposit--error")?.classList.add("hidden");
+    // }
+
+    const card = document.querySelector(".selection").innerHTML;
+    const currentTime = new Date();
+
+    const newTransaction = {
+      depositAmount: expense,
       cardUsed: card,
       time: `${currentTime.getDate()}/${
         currentTime.getMonth() + 1
       }/${currentTime.getFullYear()}`,
+      type: "expense",
     };
 
     setUser({
@@ -80,31 +134,53 @@ export default function Homepage() {
           </p>
           <div className="w-[97%] h-[80%] bg-zinc-400 self-center rounded-[50px]">
             <div className="flex justify-between px-12 py-5 font-bold text-2xl text-black text-opacity-80 border-b-2 w-full border-zinc-700 border-opacity-50 ">
+              <p>Type</p>
               <p>Card Used</p>
               <p>Date</p>
               <p>Amount</p>
             </div>
-            {user.transactions.map(({ depositAmount, time, cardUsed }) => {
-              return (
-                <div className="text-black text-opacity-80 flex justify-between px-12 mt-6 pb-5 font-bold border-b-2 border-zinc-600 border-opacity-45 ">
-                  <p>{cardUsed}</p>
-                  <p className="-ml-12 w-16">{time}</p>
-                  <p className="mr-6 w-10">${depositAmount}</p>
-                </div>
-              );
-            })}
+            {user.transactions.map(
+              ({ type, depositAmount, time, cardUsed }) => {
+                return (
+                  <div className="text-black text-opacity-80 flex justify-between px-12 mt-6 pb-5 font-bold border-b-2 border-zinc-600 border-opacity-45">
+                    <p>{type}</p>
+                    <p className="w-36 -ml-6">{cardUsed}</p>
+                    <p className="w-16 -ml-16">{time}</p>
+                    <p
+                      className={`mr-6 w-10 ${
+                        depositAmount > 0 ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      ${depositAmount}
+                    </p>
+                  </div>
+                );
+              }
+            )}
           </div>
         </div>
         <div className="col-span-3 row-span-6 rounded-[50px] bg-zinc-500 flex flex-col justify-between">
-          <div className="grid grid-cols-5 grid-rows-2 items-center mt-5">
-            <p className="text-2xl font-bold ml-6 mt-7 mb-1 text-orange-200 col-span-5">
+          <div className="grid grid-cols-5 grid-rows-2 items-center mt-5 relative">
+            <p className="text-2xl font-bold ml-6 mt-7 mb-1 text-orange-200 col-span-5 ">
               Deposit
             </p>
             <input
               type="number"
               placeholder="Amount"
+              id="depositAmount"
               className="deposit--input appearance-none text-white placeholder:text-white placeholder:text-opacity-30 rounded-full w-full h-4/6 ml-5 bg-zinc-600 border-2 border-zinc-400 focus:outline-none indent-5 col-span-3"
             />
+            <label
+              htmlFor="depositAmount"
+              className="deposit--error absolute text-red-500 font-semibold text-xs top-[7.4rem] left-9 hidden"
+            >
+              {depositAmount <= 0
+                ? "Amount must be larger then 0"
+                : depositAmount >= 10000000
+                ? "Amount is to big!"
+                : ""}
+            </label>
+
             <button
               onClick={handleDeposit}
               className="col-span-2 col-start-5 w-8/12 h-4/6 bg-gradient-to-tr from-green-500 to-teal-500 rounded-full text-xl font-extrabold"
@@ -119,9 +195,12 @@ export default function Homepage() {
             <input
               type="text"
               placeholder="Amount"
-              className="text-white placeholder:text-white placeholder:text-opacity-30 rounded-full w-full h-4/6 ml-5 bg-zinc-600 border-2 border-zinc-400 focus:outline-none indent-5 col-span-3"
+              className="expense--input text-white placeholder:text-white placeholder:text-opacity-30 rounded-full w-full h-4/6 ml-5 bg-zinc-600 border-2 border-zinc-400 focus:outline-none indent-5 col-span-3"
             />
-            <button className="col-span-2 col-start-5 w-8/12 h-4/6 bg-gradient-to-tr from-rose-400 to-rose-600 rounded-full text-xl font-extrabold">
+            <button
+              onClick={handleExpense}
+              className="col-span-2 col-start-5 w-8/12 h-4/6 bg-gradient-to-tr from-rose-400 to-rose-600 rounded-full text-xl font-extrabold"
+            >
               ➞
             </button>
           </div>
