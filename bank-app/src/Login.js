@@ -57,6 +57,8 @@ export default function Login() {
           password: passwordInput,
           creditCard: [],
           transactions: [],
+          money: 0,
+          loan: 0,
           loggedIn: true,
         });
         document

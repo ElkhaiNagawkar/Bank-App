@@ -81,6 +81,8 @@ export default function CardsPage() {
         password: user.password,
         creditCard: [...user.creditCard, newCard],
         transactions: user.transactions,
+        money: user.money,
+        loan: user.loan,
         loggerIn: user.loggedIn,
       });
 
@@ -122,6 +124,8 @@ export default function CardsPage() {
       password: user.password,
       creditCard: [...newArr],
       transactions: user.transactions,
+      money: user.money,
+      loan: user.loan,
       loggerIn: user.loggedIn,
     }));
 
