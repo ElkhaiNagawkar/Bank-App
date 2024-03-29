@@ -1,5 +1,6 @@
 import React from "react";
 import CardDropdown from "./HelperComponents/CardDropdown";
+import Pagination from "./HelperComponents/Pagination";
 
 export default function Homepage() {
   const [allUsers, setUsers] = React.useState(
@@ -46,7 +47,7 @@ export default function Homepage() {
       userName: user.userName,
       password: user.password,
       creditCard: user.creditCard,
-      transactions: [...user.transactions, newTransaction],
+      transactions: [newTransaction, ...user.transactions],
       money: user.money + +newTransaction.amount,
       loan: user.loan,
       loggerIn: user.loggedIn,
@@ -54,7 +55,7 @@ export default function Homepage() {
 
     allUsers.find((user) => {
       if (user.loggedIn) {
-        user.transactions.push(newTransaction);
+        user.transactions.unshift(newTransaction);
         user.money = user.money + +newTransaction.amount;
       }
     });
@@ -90,7 +91,7 @@ export default function Homepage() {
       userName: user.userName,
       password: user.password,
       creditCard: user.creditCard,
-      transactions: [...user.transactions, newTransaction],
+      transactions: [newTransaction, ...user.transactions],
       money: user.money - +newTransaction.amount,
       loan: user.loan,
       loggerIn: user.loggedIn,
@@ -98,12 +99,30 @@ export default function Homepage() {
 
     allUsers.find((user) => {
       if (user.loggedIn) {
-        user.transactions.push(newTransaction);
+        user.transactions.unshift(newTransaction);
         user.money = user.money - +newTransaction.amount;
       }
     });
 
     localStorage.setItem("allUsers", JSON.stringify(allUsers));
+  }
+
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [transactionsPerPage, setTransactionsPerPage] = React.useState(6);
+
+  const indexOfLastTransaction = currentPage * transactionsPerPage;
+  const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
+  const currentTransactions = user.transactions.slice(
+    indexOfFirstTransaction,
+    indexOfLastTransaction
+  );
+
+  function paginate(pageNumber) {
+    setCurrentPage(pageNumber);
+  }
+
+  function paginateLeft(key) {
+    console.log(key);
   }
 
   return (
@@ -151,7 +170,7 @@ export default function Homepage() {
               <p>Date</p>
               <p>Amount</p>
             </div>
-            {user.transactions.map(({ type, amount, time, cardUsed }) => {
+            {currentTransactions.map(({ type, amount, time, cardUsed }) => {
               return (
                 <div className="text-black text-opacity-80 flex justify-between px-12 mt-6 pb-5 font-bold border-b-2 border-zinc-600 border-opacity-45">
                   <p>{type}</p>
@@ -168,6 +187,12 @@ export default function Homepage() {
               );
             })}
           </div>
+          <Pagination
+            transactionsPerPage={transactionsPerPage}
+            totalTransactions={user.transactions.length}
+            paginate={paginate}
+            paginateLeft={paginateLeft}
+          />
         </div>
         <div className="col-span-3 row-span-6 rounded-[50px] bg-zinc-500 flex flex-col justify-between">
           <div className="grid grid-cols-5 grid-rows-2 items-center mt-5 relative">
