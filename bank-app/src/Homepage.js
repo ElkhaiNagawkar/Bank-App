@@ -1,9 +1,10 @@
 import React from "react";
+import { IoMdArrowRoundDown } from "react-icons/io";
 import CardDropdown from "./HelperComponents/CardDropdown";
 import Pagination from "./HelperComponents/Pagination";
 
 export default function Homepage() {
-  const [allUsers, setUsers] = React.useState(
+  const [allUsers] = React.useState(
     localStorage["allUsers"] ? JSON.parse(localStorage.getItem("allUsers")) : []
   );
 
@@ -20,6 +21,126 @@ export default function Homepage() {
   const [expenseAmount, setExpenseAmount] = React.useState(
     document.querySelector(".expense--input")?.value
   );
+
+  const [loanMenuOpen, setLoanMenuOpen] = React.useState(false);
+
+  function addDeposit(newTransaction) {
+    if (user.transactions.length === 60) {
+      setUser({
+        userName: user.userName,
+        password: user.password,
+        creditCard: user.creditCard,
+        transactions: [...user.transactions, user.transactions.splice(-1)],
+        money: user.money + +newTransaction.amount,
+        loan: user.loan,
+        loggerIn: user.loggedIn,
+      });
+
+      allUsers.find((user) => {
+        if (user.loggedIn) {
+          user.transactions.splice(-1);
+        }
+      });
+      localStorage.setItem("allUsers", JSON.stringify(allUsers));
+    }
+    setUser({
+      userName: user.userName,
+      password: user.password,
+      creditCard: user.creditCard,
+      transactions: [newTransaction, ...user.transactions],
+      money: user.money + +newTransaction.amount,
+      loan: user.loan,
+      loggerIn: user.loggedIn,
+    });
+
+    allUsers.find((user) => {
+      if (user.loggedIn) {
+        user.transactions.unshift(newTransaction);
+        user.money = user.money + +newTransaction.amount;
+      }
+    });
+    localStorage.setItem("allUsers", JSON.stringify(allUsers));
+  }
+
+  function addExpense(newTransaction) {
+    if (user.transactions.length === 60) {
+      setUser({
+        userName: user.userName,
+        password: user.password,
+        creditCard: user.creditCard,
+        transactions: [...user.transactions, user.transactions.splice(-1)],
+        money: user.money - +newTransaction.amount,
+        loan: user.loan,
+        loggerIn: user.loggedIn,
+      });
+
+      allUsers.find((user) => {
+        if (user.loggedIn) {
+          user.transactions.splice(-1);
+        }
+      });
+      localStorage.setItem("allUsers", JSON.stringify(allUsers));
+    }
+
+    setUser({
+      userName: user.userName,
+      password: user.password,
+      creditCard: user.creditCard,
+      transactions: [newTransaction, ...user.transactions],
+      money: user.money - +newTransaction.amount,
+      loan: user.loan,
+      loggerIn: user.loggedIn,
+    });
+
+    allUsers.find((user) => {
+      if (user.loggedIn) {
+        user.transactions.unshift(newTransaction);
+        user.money = user.money - +newTransaction.amount;
+      }
+    });
+
+    localStorage.setItem("allUsers", JSON.stringify(allUsers));
+  }
+
+  function addLoan(newTransaction) {
+    if (user.transactions.length === 60) {
+      setUser({
+        userName: user.userName,
+        password: user.password,
+        creditCard: user.creditCard,
+        transactions: [...user.transactions, user.transactions.splice(-1)],
+        money: user.money + +newTransaction.amount,
+        loan: user.loan + +newTransaction.amount,
+        loggerIn: user.loggedIn,
+      });
+
+      allUsers.find((user) => {
+        if (user.loggedIn) {
+          user.transactions.splice(-1);
+        }
+      });
+      localStorage.setItem("allUsers", JSON.stringify(allUsers));
+    }
+
+    setUser({
+      userName: user.userName,
+      password: user.password,
+      creditCard: user.creditCard,
+      transactions: [newTransaction, ...user.transactions],
+      money: user.money + +newTransaction.amount,
+      loan: user.loan + +newTransaction.amount,
+      loggerIn: user.loggedIn,
+    });
+
+    allUsers.find((user) => {
+      if (user.loggedIn) {
+        user.transactions.unshift(newTransaction);
+        user.money = user.money + +newTransaction.amount;
+      }
+    });
+
+    localStorage.setItem("allUsers", JSON.stringify(allUsers));
+  }
 
   function handleDeposit() {
     const deposit = document.querySelector(".deposit--input")?.value;
@@ -43,24 +164,7 @@ export default function Homepage() {
       type: "Deposit",
     };
 
-    setUser({
-      userName: user.userName,
-      password: user.password,
-      creditCard: user.creditCard,
-      transactions: [newTransaction, ...user.transactions],
-      money: user.money + +newTransaction.amount,
-      loan: user.loan,
-      loggerIn: user.loggedIn,
-    });
-
-    allUsers.find((user) => {
-      if (user.loggedIn) {
-        user.transactions.unshift(newTransaction);
-        user.money = user.money + +newTransaction.amount;
-      }
-    });
-
-    localStorage.setItem("allUsers", JSON.stringify(allUsers));
+    addDeposit(newTransaction);
   }
 
   function handleExpense() {
@@ -87,28 +191,46 @@ export default function Homepage() {
       type: "Expense",
     };
 
-    setUser({
-      userName: user.userName,
-      password: user.password,
-      creditCard: user.creditCard,
-      transactions: [newTransaction, ...user.transactions],
-      money: user.money - +newTransaction.amount,
-      loan: user.loan,
-      loggerIn: user.loggedIn,
-    });
+    addExpense(newTransaction);
+  }
 
-    allUsers.find((user) => {
-      if (user.loggedIn) {
-        user.transactions.unshift(newTransaction);
-        user.money = user.money - +newTransaction.amount;
+  function handleLoanType() {
+    document.querySelector(".loan--selection").innerHTML === "Request"
+      ? (document.querySelector(".loan--selection").innerHTML = "Pay")
+      : (document.querySelector(".loan--selection").innerHTML = "Request");
+  }
+
+  function handleLoan() {
+    const loan = document.querySelector(".loan--input")?.value;
+    const loanType = document.querySelector(".loan--selection").innerHTML;
+    if (loanType === "Request") {
+      setDepositAmount(loan);
+
+      if (loan <= 0 || loan >= 10000000) {
+        document.querySelector(".loan--error")?.classList.remove("hidden");
+        return;
+      } else {
+        document.querySelector(".loan--error")?.classList.add("hidden");
       }
-    });
 
-    localStorage.setItem("allUsers", JSON.stringify(allUsers));
+      const currentTime = new Date();
+
+      const newTransaction = {
+        amount: Number(loan).toFixed(2),
+        cardUsed: "N/A",
+        time: `${currentTime.getDate()}/${
+          currentTime.getMonth() + 1
+        }/${currentTime.getFullYear()}`,
+        type: "Loan",
+      };
+
+      addLoan(newTransaction);
+    }
+    // Else will be added here
   }
 
   const [currentPage, setCurrentPage] = React.useState(1);
-  const [transactionsPerPage, setTransactionsPerPage] = React.useState(6);
+  const [transactionsPerPage] = React.useState(6);
 
   const indexOfLastTransaction = currentPage * transactionsPerPage;
   const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
@@ -119,10 +241,6 @@ export default function Homepage() {
 
   function paginate(pageNumber) {
     setCurrentPage(pageNumber);
-  }
-
-  function paginateLeft(key) {
-    console.log(key);
   }
 
   return (
@@ -173,15 +291,19 @@ export default function Homepage() {
             {currentTransactions.map(({ type, amount, time, cardUsed }) => {
               return (
                 <div className="text-black text-opacity-80 flex justify-between px-12 mt-6 pb-5 font-bold border-b-2 border-zinc-600 border-opacity-45">
-                  <p>{type}</p>
-                  <p className="w-36 -ml-6">{cardUsed}</p>
-                  <p className="w-16 -ml-16">{time}</p>
+                  <p className="w-[3.2rem]">{type}</p>
+                  <p className="w-36 -ml-2">{cardUsed}</p>
+                  <p className="w-16 -ml-10">{time}</p>
                   <p
-                    className={`mr-6 w-10 ${
-                      type === "Deposit" ? "text-green-600" : "text-red-600"
+                    className={`mr-10 w-10 ${
+                      type === "Deposit" || type === "Loan"
+                        ? "text-green-600"
+                        : "text-red-600"
                     }`}
                   >
-                    {`$${type !== "Deposit" ? "-" : ""}${amount}`}
+                    {`$${
+                      type !== "Deposit" && type !== "Loan" ? "-" : ""
+                    }${amount}`}
                   </p>
                 </div>
               );
@@ -191,7 +313,6 @@ export default function Homepage() {
             transactionsPerPage={transactionsPerPage}
             totalTransactions={user.transactions.length}
             paginate={paginate}
-            paginateLeft={paginateLeft}
           />
         </div>
         <div className="col-span-3 row-span-6 rounded-[50px] bg-zinc-500 flex flex-col justify-between">
@@ -273,19 +394,57 @@ export default function Homepage() {
             </button>
           </div>
         </div>
-        <div className="col-span-3 row-span-3 rounded-[50px] bg-zinc-500">
+        <div className="col-span-3 row-span-3 rounded-[50px] bg-zinc-500 relative">
           <div className="grid grid-cols-5 items-center gap-x-5">
-            <p className="text-2xl font-bold ml-6 mt-7 mb-6 text-orange-200 col-span-6">
+            <p className="text-2xl font-bold ml-6 mt-7 mb-6 text-orange-200 col-span-3">
               Loan
             </p>
+
+            <div
+              onClick={() => setLoanMenuOpen(!loanMenuOpen)}
+              className="bg-zinc-400 w-10/12 h-10 rounded-full flex items-center justify-end col-start-4 col-span-3 relative"
+            >
+              <IoMdArrowRoundDown className="text-white h-full w-5 absolute pointer-events-none self-center mr-3" />
+              <p className="loan--selection absolute left-4 font-[600] text-white opacity-80 select-none">
+                Request
+              </p>
+              {loanMenuOpen && (
+                <div
+                  onClick={handleLoanType}
+                  className="scroll bg-zinc-400 rounded-xl left-2 top-11 h-10 w-24 absolute overflow-y-auto select-none flex justify-center items-center"
+                >
+                  <p className="text-white opacity-80 font-semibold ">
+                    {document.querySelector(".loan--selection").innerHTML ===
+                    "Request"
+                      ? "Pay"
+                      : "Request"}
+                  </p>
+                </div>
+              )}
+            </div>
             <input
               type="text"
               placeholder="Amount"
-              className="col-span-3 w-10/12 h-8 ml-7 rounded-full text-white placeholder:text-white placeholder:text-opacity-30 bg-zinc-600 border-2 border-zinc-400 focus:outline-none indent-3"
+              id="loanAmount"
+              className="loan--input col-span-3 w-10/12 h-8 ml-7 rounded-full text-white placeholder:text-white placeholder:text-opacity-30 bg-zinc-600 border-2 border-zinc-400 focus:outline-none indent-3"
             />
-
-            <button className="col-span-2 col-start-4 bg-green-400 rounded-full h-full font-bold ">
-              Request
+            <label
+              htmlFor="loanAmount"
+              className="loan--error absolute text-red-500 font-semibold text-xs top-[7.4rem] left-5 hidden"
+            >
+              {depositAmount <= 0
+                ? "Amount must be larger then 0"
+                : depositAmount >= 10000000
+                ? "Amount is to big!"
+                : ""}
+            </label>
+            <button
+              onClick={handleLoan}
+              className="col-span-2 col-start-4 bg-green-400 rounded-full h-full font-bold "
+            >
+              {document.querySelector(".loan--selection")?.innerHTML
+                ? document.querySelector(".loan--selection")?.innerHTML
+                : "Request"}
             </button>
           </div>
         </div>
