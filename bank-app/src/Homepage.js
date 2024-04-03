@@ -142,6 +142,46 @@ export default function Homepage() {
     localStorage.setItem("allUsers", JSON.stringify(allUsers));
   }
 
+  function payLoan(newTransaction) {
+    if (user.transactions.length === 60) {
+      setUser({
+        userName: user.userName,
+        password: user.password,
+        creditCard: user.creditCard,
+        transactions: [...user.transactions, user.transactions.splice(-1)],
+        money: user.money - +newTransaction.amount,
+        loan: user.loan - +newTransaction.amount,
+        loggerIn: user.loggedIn,
+      });
+
+      allUsers.find((user) => {
+        if (user.loggedIn) {
+          user.transactions.splice(-1);
+        }
+      });
+      localStorage.setItem("allUsers", JSON.stringify(allUsers));
+    }
+
+    setUser({
+      userName: user.userName,
+      password: user.password,
+      creditCard: user.creditCard,
+      transactions: [newTransaction, ...user.transactions],
+      money: user.money - +newTransaction.amount,
+      loan: user.loan - +newTransaction.amount,
+      loggerIn: user.loggedIn,
+    });
+
+    allUsers.find((user) => {
+      if (user.loggedIn) {
+        user.transactions.unshift(newTransaction);
+        user.money = user.money - +newTransaction.amount;
+      }
+    });
+
+    localStorage.setItem("allUsers", JSON.stringify(allUsers));
+  }
+
   function handleDeposit() {
     const deposit = document.querySelector(".deposit--input")?.value;
     setDepositAmount(deposit);
@@ -203,9 +243,10 @@ export default function Homepage() {
   function handleLoan() {
     const loan = document.querySelector(".loan--input")?.value;
     const loanType = document.querySelector(".loan--selection").innerHTML;
-    if (loanType === "Request") {
-      setDepositAmount(loan);
+    const card = document.querySelector(".selection").innerHTML;
+    setDepositAmount(loan);
 
+    if (loanType === "Request") {
       if (loan <= 0 || loan >= 10000000) {
         document.querySelector(".loan--error")?.classList.remove("hidden");
         return;
@@ -214,7 +255,6 @@ export default function Homepage() {
       }
 
       const currentTime = new Date();
-
       const newTransaction = {
         amount: Number(loan).toFixed(2),
         cardUsed: "N/A",
@@ -225,8 +265,26 @@ export default function Homepage() {
       };
 
       addLoan(newTransaction);
+    } else {
+      if (loan <= 0 || loan > user.loan || loan > user.money) {
+        document.querySelector(".loan--error")?.classList.remove("hidden");
+        return;
+      } else {
+        document.querySelector(".loan--error")?.classList.add("hidden");
+      }
+
+      const currentTime = new Date();
+      const newTransaction = {
+        amount: Number(loan).toFixed(2),
+        cardUsed: card,
+        time: `${currentTime.getDate()}/${
+          currentTime.getMonth() + 1
+        }/${currentTime.getFullYear()}`,
+        type: "Loan Expense",
+      };
+
+      payLoan(newTransaction);
     }
-    // Else will be added here
   }
 
   const [currentPage, setCurrentPage] = React.useState(1);
@@ -291,7 +349,7 @@ export default function Homepage() {
             {currentTransactions.map(({ type, amount, time, cardUsed }) => {
               return (
                 <div className="text-black text-opacity-80 flex justify-between px-12 mt-6 pb-5 font-bold border-b-2 border-zinc-600 border-opacity-45">
-                  <p className="w-[3.2rem]">{type}</p>
+                  <p className="w-[3.2rem] whitespace-nowrap">{type}</p>
                   <p className="w-36 -ml-2">{cardUsed}</p>
                   <p className="w-16 -ml-10">{time}</p>
                   <p
@@ -430,12 +488,23 @@ export default function Homepage() {
             />
             <label
               htmlFor="loanAmount"
-              className="loan--error absolute text-red-500 font-semibold text-xs top-[7.4rem] left-5 hidden"
+              className="loan--error absolute text-red-500 font-semibold text-xs top-[7.4rem] left-8 hidden"
             >
-              {depositAmount <= 0
+              {document.querySelector(".loan--selection")?.innerHTML ===
+              "Request"
+                ? depositAmount <= 0
+                  ? "Amount must be larger then 0"
+                  : depositAmount >= 10000000
+                  ? "Amount is to big!"
+                  : ""
+                : user.loan === 0
+                ? "No loan to pay off"
+                : depositAmount <= 0
                 ? "Amount must be larger then 0"
-                : depositAmount >= 10000000
-                ? "Amount is to big!"
+                : depositAmount > user.loan
+                ? "Amount is larger then loan"
+                : depositAmount > user.money
+                ? "Not Enough to pay "
                 : ""}
             </label>
             <button

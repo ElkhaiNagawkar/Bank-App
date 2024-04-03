@@ -4,6 +4,7 @@ import Login from "./Login";
 import Homepage from "./Homepage";
 import Navbar from "./Navbar";
 import CardsPage from "./CardsPage";
+import AccountPage from "./AccountPage";
 
 export default function App() {
   const location = useLocation();
@@ -28,6 +29,7 @@ export default function App() {
         <Routes>
           <Route path="/Homepage" element={<Homepage />} />
           <Route path="/CardsPage" element={<CardsPage />} />
+          <Route path="/AccountPage" element={<AccountPage />} />
         </Routes>
       </div>
     </div>
