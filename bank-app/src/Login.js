@@ -6,6 +6,8 @@ export default function Login() {
   const [user, setUser] = React.useState(
     localStorage["allUsers"] ? JSON.parse(localStorage.getItem("allUsers")) : []
   );
+  const [signUpError, setSignUpError] = React.useState("");
+  const [passwordSignUpError, setPasswordSignUpError] = React.useState("");
 
   const navigate = useNavigate();
   function changeRoute() {
@@ -48,9 +50,15 @@ export default function Login() {
         document
           .querySelector(".signUp--username--taken")
           ?.classList.remove("hidden");
+        setSignUpError("This User name is already taken");
         document
           .querySelector(".signUp--username--taken")
           ?.classList.add("flex");
+      } else if (userNameInput.length < 3) {
+        document
+          .querySelector(".signUp--username--taken")
+          ?.classList.remove("hidden");
+        setSignUpError("User name must be at least 3 characters long");
       } else {
         user?.push({
           userName: userNameInput,
@@ -77,6 +85,7 @@ export default function Login() {
       document
         .querySelector(".signUp--username--error")
         ?.classList.remove("hidden");
+      setSignUpError("Please Enter Username");
     } else {
       document
         .querySelector(".signUp--username--error")
@@ -87,6 +96,7 @@ export default function Login() {
       document
         .querySelector(".signUp--password--error")
         ?.classList.remove("hidden");
+      setPasswordSignUpError("Please enter a password");
     } else {
       document
         .querySelector(".signUp--password--error")
@@ -113,7 +123,6 @@ export default function Login() {
         document.querySelector(".login--error")?.classList.add("hidden");
         document.querySelector(".login--error")?.classList.remove("flex");
         setUser((user[index].loggedIn = true));
-        console.log(user[index]);
         localStorage.setItem("allUsers", JSON.stringify(user));
 
         changeRoute();
@@ -133,7 +142,9 @@ export default function Login() {
               type="text"
               placeholder="UserName"
               id="username"
-              className="peer signUp--username--input h-12 w-full rounded-full mt-24 bg-zinc-600 border-2 border-zinc-500 focus:outline-none placeholder-transparent placeholder:select-none indent-5"
+              minLength={3}
+              maxLength={21}
+              className="peer signUp--username--input h-12 w-full rounded-full mt-24 bg-zinc-600 border-2 border-zinc-500 focus:outline-none placeholder-transparent placeholder:select-none indent-5 text-white"
             />
             <label
               htmlFor="username"
@@ -145,7 +156,7 @@ export default function Login() {
               htmlFor="username"
               className="signUp--username--error absolute left-4 top-full font-semibold text-red-500 opacity-80 hidden text-xs"
             >
-              Please enter a username
+              {signUpError}
             </label>
           </div>
           <div className="relative">
@@ -165,7 +176,7 @@ export default function Login() {
               htmlFor="password"
               className="signUp--password--error absolute left-4 top-full font-semibold text-red-500 opacity-80 hidden text-xs"
             >
-              Please enter a password
+              {passwordSignUpError}
             </label>
           </div>
           <div className="flex flex-col">
@@ -179,7 +190,7 @@ export default function Login() {
               htmlFor="signUp--button"
               className="signUp--username--taken hidden justify-center mt-3 text-red-500"
             >
-              This User name is already taken
+              {signUpError}
             </label>
           </div>
         </div>
