@@ -1,9 +1,12 @@
 import React from "react";
 import { VscAccount } from "react-icons/vsc";
+import { useNavigate } from "react-router-dom";
 
 export default function AccountPage() {
   const [allUsers] = React.useState(
-    localStorage["allUsers"] ? JSON.parse(localStorage.getItem("allUsers")) : []
+    sessionStorage["allUsers"]
+      ? JSON.parse(sessionStorage.getItem("allUsers"))
+      : []
   );
 
   const [user, setUser] = React.useState(
@@ -16,6 +19,12 @@ export default function AccountPage() {
   const [changePasswordError, setChangePasswordError] = React.useState("");
   const [usernameChangeGood, serUsernameChangeGood] = React.useState(null);
   const [passwordChangeGood, setPasswordChangeGood] = React.useState(null);
+
+  const navigate = useNavigate();
+  function changeRoute() {
+    const path = "/";
+    navigate(path);
+  }
 
   function handleUserNameChange() {
     const userNameInput = document.querySelector(
@@ -37,13 +46,8 @@ export default function AccountPage() {
         return;
       } else {
         setUser({
+          ...user,
           userName: userNameInput,
-          password: user.password,
-          creditCard: user.creditCard,
-          transactions: user.transactions,
-          money: user.money,
-          loan: user.loan,
-          loggerIn: user.loggedIn,
         });
       }
       allUsers.find((user) => {
@@ -52,7 +56,7 @@ export default function AccountPage() {
         }
       });
 
-      localStorage.setItem("allUsers", JSON.stringify(allUsers));
+      sessionStorage.setItem("allUsers", JSON.stringify(allUsers));
     }
     if (userNameInput === "") {
       serUsernameChangeGood(false);
@@ -77,13 +81,8 @@ export default function AccountPage() {
         return;
       } else {
         setUser({
-          userName: user.userName,
+          ...user,
           password: passwordInput,
-          creditCard: user.creditCard,
-          transactions: user.transactions,
-          money: user.money,
-          loan: user.loan,
-          loggerIn: user.loggedIn,
         });
       }
       allUsers.find((user) => {
@@ -92,7 +91,7 @@ export default function AccountPage() {
         }
       });
 
-      localStorage.setItem("allUsers", JSON.stringify(allUsers));
+      sessionStorage.setItem("allUsers", JSON.stringify(allUsers));
     }
     if (passwordInput === "") {
       setChangePasswordError("Please Enter password");
@@ -101,6 +100,22 @@ export default function AccountPage() {
     }
     setChangePasswordError("Password Changed");
     setPasswordChangeGood(true);
+  }
+
+  function handleLogOut() {
+    setUser({
+      ...user,
+      loggedIn: false,
+    });
+
+    allUsers.find((user) => {
+      if (user.loggedIn) {
+        user.loggedIn = false;
+      }
+    });
+
+    sessionStorage.setItem("allUsers", JSON.stringify(allUsers));
+    changeRoute();
   }
 
   return (
@@ -116,7 +131,12 @@ export default function AccountPage() {
           <p>{user.userName}</p>
         </div>
         <div className="flex flex-col gap-y-8 w-44 font-bold mt-[22rem]">
-          <button className="bg-orange-400 py-2 rounded-full">Log Out</button>
+          <button
+            onClick={handleLogOut}
+            className="bg-orange-400 py-2 rounded-full"
+          >
+            Log Out
+          </button>
           <button className="bg-red-500  py-2 rounded-full">
             Delete Account
           </button>

@@ -3,7 +3,9 @@ import { IoMdArrowRoundDown } from "react-icons/io";
 
 export default function CardDropdown() {
   const [allUsers, setUsers] = React.useState(
-    localStorage["allUsers"] ? JSON.parse(localStorage.getItem("allUsers")) : []
+    sessionStorage["allUsers"]
+      ? JSON.parse(sessionStorage.getItem("allUsers"))
+      : []
   );
 
   const [user, setUser] = React.useState(

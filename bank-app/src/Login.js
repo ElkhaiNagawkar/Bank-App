@@ -4,7 +4,9 @@ import { useNavigate } from "react-router-dom";
 export default function Login() {
   const [signOrLog, setSignOrLog] = React.useState(false);
   const [user, setUser] = React.useState(
-    localStorage["allUsers"] ? JSON.parse(localStorage.getItem("allUsers")) : []
+    sessionStorage["allUsers"]
+      ? JSON.parse(sessionStorage.getItem("allUsers"))
+      : []
   );
   const [signUpError, setSignUpError] = React.useState("");
   const [passwordSignUpError, setPasswordSignUpError] = React.useState("");
@@ -75,7 +77,7 @@ export default function Login() {
         document
           .querySelector(".signUp--username--taken")
           ?.classList.remove("flex");
-        localStorage.setItem("allUsers", JSON.stringify(user));
+        sessionStorage.setItem("allUsers", JSON.stringify(user));
 
         changeRoute();
       }
@@ -105,6 +107,11 @@ export default function Login() {
   }
 
   function handleLogin(e) {
+    if (!sessionStorage["allUsers"]) {
+      document.querySelector(".login--error")?.classList.remove("hidden");
+      document.querySelector(".login--error")?.classList.add("flex");
+      return;
+    }
     e.preventDefault();
 
     const userNameInput = document.querySelector(
@@ -119,11 +126,11 @@ export default function Login() {
         (user) =>
           user.userName === userNameInput && user.password === passwordInput
       );
-      if (index === 0 || index) {
+      if (index !== undefined) {
         document.querySelector(".login--error")?.classList.add("hidden");
         document.querySelector(".login--error")?.classList.remove("flex");
         setUser((user[index].loggedIn = true));
-        localStorage.setItem("allUsers", JSON.stringify(user));
+        sessionStorage.setItem("allUsers", JSON.stringify(user));
 
         changeRoute();
       } else {

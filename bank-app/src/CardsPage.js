@@ -5,7 +5,9 @@ import { v4 as uuidv4 } from "uuid";
 export default function CardsPage() {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [allUsers, setUsers] = React.useState(
-    localStorage["allUsers"] ? JSON.parse(localStorage.getItem("allUsers")) : []
+    sessionStorage["allUsers"]
+      ? JSON.parse(sessionStorage.getItem("allUsers"))
+      : []
   );
 
   const [user, setUser] = React.useState(
@@ -77,13 +79,8 @@ export default function CardsPage() {
       };
 
       setUser({
-        userName: user.userName,
-        password: user.password,
+        ...user,
         creditCard: [...user.creditCard, newCard],
-        transactions: user.transactions,
-        money: user.money,
-        loan: user.loan,
-        loggerIn: user.loggedIn,
       });
 
       allUsers.find((user) => {
@@ -92,7 +89,7 @@ export default function CardsPage() {
         }
       });
 
-      localStorage.setItem("allUsers", JSON.stringify(allUsers));
+      sessionStorage.setItem("allUsers", JSON.stringify(allUsers));
     }
   }
 
@@ -120,13 +117,8 @@ export default function CardsPage() {
     });
 
     setUser(() => ({
-      userName: user.userName,
-      password: user.password,
+      ...user,
       creditCard: [...newArr],
-      transactions: user.transactions,
-      money: user.money,
-      loan: user.loan,
-      loggerIn: user.loggedIn,
     }));
 
     allUsers.find((user) => {
@@ -135,7 +127,7 @@ export default function CardsPage() {
       }
     });
 
-    localStorage.setItem("allUsers", JSON.stringify(allUsers));
+    sessionStorage.setItem("allUsers", JSON.stringify(allUsers));
 
     document.querySelector(".selection").innerHTML = "";
   }

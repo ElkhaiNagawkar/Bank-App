@@ -5,7 +5,9 @@ import Pagination from "./HelperComponents/Pagination";
 
 export default function Homepage() {
   const [allUsers] = React.useState(
-    localStorage["allUsers"] ? JSON.parse(localStorage.getItem("allUsers")) : []
+    sessionStorage["allUsers"]
+      ? JSON.parse(sessionStorage.getItem("allUsers"))
+      : []
   );
 
   const [user, setUser] = React.useState(
@@ -27,13 +29,9 @@ export default function Homepage() {
   function addDeposit(newTransaction) {
     if (user.transactions.length === 60) {
       setUser({
-        userName: user.userName,
-        password: user.password,
-        creditCard: user.creditCard,
+        ...user,
         transactions: [...user.transactions, user.transactions.splice(-1)],
         money: user.money + +newTransaction.amount,
-        loan: user.loan,
-        loggerIn: user.loggedIn,
       });
 
       allUsers.find((user) => {
@@ -41,16 +39,12 @@ export default function Homepage() {
           user.transactions.splice(-1);
         }
       });
-      localStorage.setItem("allUsers", JSON.stringify(allUsers));
+      sessionStorage.setItem("allUsers", JSON.stringify(allUsers));
     }
     setUser({
-      userName: user.userName,
-      password: user.password,
-      creditCard: user.creditCard,
+      ...user,
       transactions: [newTransaction, ...user.transactions],
       money: user.money + +newTransaction.amount,
-      loan: user.loan,
-      loggerIn: user.loggedIn,
     });
 
     allUsers.find((user) => {
@@ -59,19 +53,15 @@ export default function Homepage() {
         user.money = user.money + +newTransaction.amount;
       }
     });
-    localStorage.setItem("allUsers", JSON.stringify(allUsers));
+    sessionStorage.setItem("allUsers", JSON.stringify(allUsers));
   }
 
   function addExpense(newTransaction) {
     if (user.transactions.length === 60) {
       setUser({
-        userName: user.userName,
-        password: user.password,
-        creditCard: user.creditCard,
+        ...user,
         transactions: [...user.transactions, user.transactions.splice(-1)],
         money: user.money - +newTransaction.amount,
-        loan: user.loan,
-        loggerIn: user.loggedIn,
       });
 
       allUsers.find((user) => {
@@ -79,17 +69,13 @@ export default function Homepage() {
           user.transactions.splice(-1);
         }
       });
-      localStorage.setItem("allUsers", JSON.stringify(allUsers));
+      sessionStorage.setItem("allUsers", JSON.stringify(allUsers));
     }
 
     setUser({
-      userName: user.userName,
-      password: user.password,
-      creditCard: user.creditCard,
+      ...user,
       transactions: [newTransaction, ...user.transactions],
       money: user.money - +newTransaction.amount,
-      loan: user.loan,
-      loggerIn: user.loggedIn,
     });
 
     allUsers.find((user) => {
@@ -99,19 +85,16 @@ export default function Homepage() {
       }
     });
 
-    localStorage.setItem("allUsers", JSON.stringify(allUsers));
+    sessionStorage.setItem("allUsers", JSON.stringify(allUsers));
   }
 
   function addLoan(newTransaction) {
     if (user.transactions.length === 60) {
       setUser({
-        userName: user.userName,
-        password: user.password,
-        creditCard: user.creditCard,
+        ...user,
         transactions: [...user.transactions, user.transactions.splice(-1)],
         money: user.money + +newTransaction.amount,
         loan: user.loan + +newTransaction.amount,
-        loggerIn: user.loggedIn,
       });
 
       allUsers.find((user) => {
@@ -119,17 +102,14 @@ export default function Homepage() {
           user.transactions.splice(-1);
         }
       });
-      localStorage.setItem("allUsers", JSON.stringify(allUsers));
+      sessionStorage.setItem("allUsers", JSON.stringify(allUsers));
     }
 
     setUser({
-      userName: user.userName,
-      password: user.password,
-      creditCard: user.creditCard,
+      ...user,
       transactions: [newTransaction, ...user.transactions],
       money: user.money + +newTransaction.amount,
       loan: user.loan + +newTransaction.amount,
-      loggerIn: user.loggedIn,
     });
 
     allUsers.find((user) => {
@@ -139,19 +119,16 @@ export default function Homepage() {
       }
     });
 
-    localStorage.setItem("allUsers", JSON.stringify(allUsers));
+    sessionStorage.setItem("allUsers", JSON.stringify(allUsers));
   }
 
   function payLoan(newTransaction) {
     if (user.transactions.length === 60) {
       setUser({
-        userName: user.userName,
-        password: user.password,
-        creditCard: user.creditCard,
+        ...user,
         transactions: [...user.transactions, user.transactions.splice(-1)],
         money: user.money - +newTransaction.amount,
         loan: user.loan - +newTransaction.amount,
-        loggerIn: user.loggedIn,
       });
 
       allUsers.find((user) => {
@@ -159,17 +136,14 @@ export default function Homepage() {
           user.transactions.splice(-1);
         }
       });
-      localStorage.setItem("allUsers", JSON.stringify(allUsers));
+      sessionStorage.setItem("allUsers", JSON.stringify(allUsers));
     }
 
     setUser({
-      userName: user.userName,
-      password: user.password,
-      creditCard: user.creditCard,
+      ...user,
       transactions: [newTransaction, ...user.transactions],
       money: user.money - +newTransaction.amount,
       loan: user.loan - +newTransaction.amount,
-      loggerIn: user.loggedIn,
     });
 
     allUsers.find((user) => {
@@ -179,7 +153,7 @@ export default function Homepage() {
       }
     });
 
-    localStorage.setItem("allUsers", JSON.stringify(allUsers));
+    sessionStorage.setItem("allUsers", JSON.stringify(allUsers));
   }
 
   function handleDeposit() {
