@@ -118,6 +118,16 @@ export default function AccountPage() {
     changeRoute();
   }
 
+  function handleAccountDelete() {
+    const indexToDelete = allUsers.findIndex((user) => {
+      return user.loggedIn === true;
+    });
+
+    allUsers.splice(indexToDelete, 1);
+    sessionStorage.setItem("allUsers", JSON.stringify(allUsers));
+    changeRoute();
+  }
+
   return (
     <div
       className="bg-zinc-600 w-10/12 h-5/6 col-span-9 ml-20 rounded-[50px] border-2 border-orange-400 border-opacity-20 
@@ -137,7 +147,10 @@ export default function AccountPage() {
           >
             Log Out
           </button>
-          <button className="bg-red-500  py-2 rounded-full">
+          <button
+            onClick={handleAccountDelete}
+            className="bg-red-500  py-2 rounded-full"
+          >
             Delete Account
           </button>
         </div>

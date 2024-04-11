@@ -106,13 +106,12 @@ export default function Login() {
     }
   }
 
-  function handleLogin(e) {
+  function handleLogin() {
     if (!sessionStorage["allUsers"]) {
       document.querySelector(".login--error")?.classList.remove("hidden");
       document.querySelector(".login--error")?.classList.add("flex");
       return;
     }
-    e.preventDefault();
 
     const userNameInput = document.querySelector(
       ".login--username--input"
@@ -126,7 +125,7 @@ export default function Login() {
         (user) =>
           user.userName === userNameInput && user.password === passwordInput
       );
-      if (index !== undefined) {
+      if (index !== -1) {
         document.querySelector(".login--error")?.classList.add("hidden");
         document.querySelector(".login--error")?.classList.remove("flex");
         setUser((user[index].loggedIn = true));

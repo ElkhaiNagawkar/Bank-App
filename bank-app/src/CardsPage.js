@@ -15,6 +15,8 @@ export default function CardsPage() {
       return user.loggedIn === true;
     })
   );
+  const [cardMaxOrRepeat, setCardMaxOrRepeat] = React.useState("");
+  const [cardToDelete, setCardToDelete] = React.useState("");
 
   function validateCreditCard(name, number, expiry) {
     const cardHolderName = document.querySelector(".card--holder--name");
@@ -55,6 +57,10 @@ export default function CardsPage() {
   function handleAddCard() {
     if (user.creditCard.length === 8) {
       document.querySelector(".maximum--cards")?.classList.remove("hidden");
+      setCardMaxOrRepeat(
+        "Reached maximum number of cards or card already exists. Please remove a card."
+      );
+
       return;
     } else {
       document.querySelector(".maximum--cards")?.classList.add("hidden");
@@ -67,7 +73,7 @@ export default function CardsPage() {
     const cardValidated = validateCreditCard(name, number, expiry);
 
     const cardRepeat = user.creditCard.find(
-      (card) => card.cardNumber.slice(12) === number.slice(12)
+      (card) => card.cardNumber === number
     );
 
     if (cardValidated && !cardRepeat) {
@@ -90,7 +96,10 @@ export default function CardsPage() {
       });
 
       sessionStorage.setItem("allUsers", JSON.stringify(allUsers));
+      return;
     }
+    document.querySelector(".maximum--cards")?.classList.remove("hidden");
+    setCardMaxOrRepeat("Card already exists");
   }
 
   function handleSelect(cardNumber) {
@@ -98,6 +107,7 @@ export default function CardsPage() {
       return;
     }
 
+    setCardToDelete(cardNumber);
     document.querySelector(
       ".selection"
     ).innerHTML = `Ending with ${cardNumber?.slice(12)}`;
@@ -109,11 +119,11 @@ export default function CardsPage() {
       return;
     }
     const cardIndex = user.creditCard.findIndex((card) => {
-      return card.cardNumber.slice(12) === cardToDelete;
+      return card.cardNumber === cardToDelete;
     });
 
     const newArr = user.creditCard?.filter((card) => {
-      return card?.cardNumber?.slice(12) !== cardToDelete;
+      return card?.cardNumber !== cardToDelete;
     });
 
     setUser(() => ({
@@ -168,7 +178,7 @@ export default function CardsPage() {
         </div>
         <div className="w-6/12 h-full grid grid-cols-12 grid-rows-8 relative gap-x-5 gap-y-12 pr-7">
           <p className="text-4xl h-10 font-bold text-orange-400 col-span-12">
-            Add a Card:
+            Add a Card
           </p>
           <div className="relative col-span-6">
             <input
@@ -260,13 +270,12 @@ export default function CardsPage() {
               htmlFor="addCardButton"
               className="maximum--cards text-xs text-red-500 ml-4 absolute left-0 top-12 text-pretty hidden"
             >
-              Reached maximum number of cards or card already exists. Please
-              remove a card.
+              {cardMaxOrRepeat}
             </label>
           </div>
           <div className="row-start-5 col-span-8">
             <p className="text-4xl h-10 font-bold text-orange-400 col-span-6 select-none">
-              Delete a Card:
+              Delete a Card
             </p>
           </div>
           <div className="row-start-6 col-span-6 relative">
@@ -286,7 +295,12 @@ export default function CardsPage() {
                       onClick={() => handleSelect(cardNumber)}
                     >
                       <p className="font-[600] select-none">
-                        Ending with {cardNumber.slice(12)}
+                        {cardNumber
+                          .split("")
+                          .reduce(
+                            (a, e, i) => a + e + ((i + 1) % 4 === 0 ? " " : ""),
+                            ""
+                          )}
                       </p>
                     </div>
                   );
@@ -297,11 +311,7 @@ export default function CardsPage() {
           <div className="row-start-6 col-start-7 col-span-6 h-full">
             <button
               className="bg-gradient-to-tl from-orange-400 to-red-400 py-2 w-full rounded-full font-semibold h-12 select-none"
-              onClick={() =>
-                handleDelete(
-                  document.querySelector(".selection")?.innerHTML.slice(12)
-                )
-              }
+              onClick={() => handleDelete(cardToDelete)}
             >
               Delete Card
             </button>
