@@ -4,7 +4,7 @@ import CardDropdown from "./HelperComponents/CardDropdown";
 import Pagination from "./HelperComponents/Pagination";
 
 export default function Homepage() {
-  const [allUsers] = React.useState(
+  const [allUsers, setAllUsers] = React.useState(
     sessionStorage["allUsers"]
       ? JSON.parse(sessionStorage.getItem("allUsers"))
       : []
@@ -25,6 +25,10 @@ export default function Homepage() {
   );
 
   const [loanMenuOpen, setLoanMenuOpen] = React.useState(false);
+
+  const [sendAmountError, setSendAmountError] = React.useState("");
+  const [sendUserNameError, setSendUserNameError] = React.useState("");
+  const [sendUserInfo, setSendUserInfo] = React.useState();
 
   function addDeposit(newTransaction) {
     if (user.transactions.length === 60) {
@@ -156,6 +160,70 @@ export default function Homepage() {
     sessionStorage.setItem("allUsers", JSON.stringify(allUsers));
   }
 
+  function addSend(newTransaction, newSendUserTransaction, userToChange) {
+    if (user.transactions.length === 60) {
+      setUser({
+        ...user,
+        transactions: [...user.transactions, user.transactions.splice(-1)],
+        money: user.money - +newTransaction.amount,
+      });
+
+      setSendUserInfo({
+        ...userToChange,
+        transactions: [
+          ...userToChange.transactions,
+          userToChange.transactions.splice(-1),
+        ],
+        money: userToChange.money + +newTransaction.amount,
+      });
+
+      allUsers.find((user) => {
+        if (user.loggedIn) {
+          user.transactions.splice(-1);
+        }
+      });
+
+      allUsers.find((user) => {
+        if (user.userName === userToChange.userName) {
+          userToChange.transactions.unshift(newSendUserTransaction);
+          userToChange.money =
+            userToChange.money + +newSendUserTransaction.amount;
+        }
+      });
+
+      sessionStorage.setItem("allUsers", JSON.stringify(allUsers));
+    }
+
+    setUser({
+      ...user,
+      transactions: [newTransaction, ...user.transactions],
+      money: user.money - +newTransaction.amount,
+    });
+
+    setSendUserInfo({
+      ...userToChange,
+      transactions: [newSendUserTransaction, ...userToChange.transactions],
+      money: userToChange.money + +newTransaction.amount,
+    });
+
+    allUsers.find((user) => {
+      if (user.loggedIn) {
+        user.transactions.unshift(newTransaction);
+        user.money = user.money - +newTransaction.amount;
+      }
+    });
+
+    allUsers.find((user) => {
+      if (user.userName === userToChange.userName) {
+        userToChange.transactions.unshift(newSendUserTransaction);
+        userToChange.money =
+          userToChange.money + +newSendUserTransaction.amount;
+      }
+    });
+
+    sessionStorage.setItem("allUsers", JSON.stringify(allUsers));
+  }
+
   function handleDeposit() {
     const deposit = document.querySelector(".deposit--input")?.value;
     setDepositAmount(deposit);
@@ -240,7 +308,7 @@ export default function Homepage() {
 
       addLoan(newTransaction);
     } else {
-      if (loan <= 0 || loan > user.loan || loan > user.money) {
+      if (loan <= 0 || loan > user.loan || loan > user.money || card === "") {
         document.querySelector(".loan--error")?.classList.remove("hidden");
         return;
       } else {
@@ -258,6 +326,92 @@ export default function Homepage() {
       };
 
       payLoan(newTransaction);
+    }
+  }
+
+  function handleSend() {
+    const amountInput = document.querySelector(".send--amount--input").value;
+    const usernameInput = document.querySelector(
+      ".send--username--input"
+    ).value;
+    const card = document.querySelector(".selection").innerHTML;
+
+    let amountPass = false;
+    let usernamePass = false;
+    let userToChange;
+
+    if (card === "") {
+      document.querySelector(".send--amount--error").classList.remove("hidden");
+      document
+        .querySelector(".send--username--error")
+        .classList.remove("hidden");
+      setSendAmountError("Please add a card");
+      setSendUserNameError("Please add a card");
+      return;
+    }
+
+    if (amountInput === "") {
+      document.querySelector(".send--amount--error").classList.remove("hidden");
+      setSendAmountError("Please enter amount");
+    } else if (amountInput >= 10000000) {
+      document.querySelector(".send--amount--error").classList.remove("hidden");
+      setSendAmountError("Amount too large");
+    } else if (amountInput <= 0) {
+      document.querySelector(".send--amount--error").classList.remove("hidden");
+      setSendAmountError("Amount must be larger then 0");
+    } else if (amountInput > user.money) {
+      document.querySelector(".send--amount--error").classList.remove("hidden");
+      setSendAmountError("Not enough money");
+    } else {
+      document.querySelector(".send--amount--error").classList.add("hidden");
+      amountPass = true;
+    }
+
+    if (usernameInput === "") {
+      document
+        .querySelector(".send--username--error")
+        .classList.remove("hidden");
+      setSendUserNameError("Please enter username");
+    } else {
+      userToChange = allUsers.find((user) => {
+        return user.userName === usernameInput;
+      });
+
+      if (userToChange !== undefined) {
+        usernamePass = true;
+        document
+          .querySelector(".send--username--error")
+          .classList.add("hidden");
+      } else {
+        document
+          .querySelector(".send--username--error")
+          .classList.remove("hidden");
+        setSendUserNameError("User does not exist");
+      }
+    }
+
+    if (amountPass && usernamePass) {
+      const currentTime = new Date();
+
+      const newTransaction = {
+        amount: Number(amountInput).toFixed(2),
+        cardUsed: card,
+        time: `${currentTime.getDate()}/${
+          currentTime.getMonth() + 1
+        }/${currentTime.getFullYear()}`,
+        type: `Sent to ${usernameInput}`,
+      };
+
+      const newTransactionForUser = {
+        amount: Number(amountInput).toFixed(2),
+        cardUsed: "N/A",
+        time: `${currentTime.getDate()}/${
+          currentTime.getMonth() + 1
+        }/${currentTime.getFullYear()}`,
+        type: `Recieved from ${user.userName}`,
+      };
+
+      addSend(newTransaction, newTransactionForUser, userToChange);
     }
   }
 
@@ -323,18 +477,24 @@ export default function Homepage() {
             {currentTransactions.map(({ type, amount, time, cardUsed }) => {
               return (
                 <div className="text-black text-opacity-80 flex justify-between px-12 mt-6 pb-5 font-bold border-b-2 border-zinc-600 border-opacity-45">
-                  <p className="w-[3.2rem] whitespace-nowrap">{type}</p>
-                  <p className="w-36 -ml-2">{cardUsed}</p>
-                  <p className="w-16 -ml-10">{time}</p>
+                  <p className="w-[6rem] whitespace-nowrap -ml-10">{type}</p>
+                  <p className="w-36">{cardUsed}</p>
+                  <p className="w-16 -ml-12">{time}</p>
                   <p
                     className={`mr-10 w-10 ${
-                      type === "Deposit" || type === "Loan"
+                      type === "Deposit" ||
+                      type === "Loan" ||
+                      type.slice(0, 13) === "Recieved from"
                         ? "text-green-600"
                         : "text-red-600"
                     }`}
                   >
                     {`$${
-                      type !== "Deposit" && type !== "Loan" ? "-" : ""
+                      type !== "Deposit" &&
+                      type !== "Loan" &&
+                      type.slice(0, 13) !== "Recieved from"
+                        ? "-"
+                        : ""
                     }${amount}`}
                   </p>
                 </div>
@@ -408,20 +568,41 @@ export default function Homepage() {
         </div>
         <div className="col-span-3 row-span-3 rounded-[50px] bg-zinc-500">
           <div className="grid grid-cols-6 items-center gap-x-5">
-            <p className="text-2xl font-bold ml-6 mt-7 mb-3 text-orange-200 col-span-6">
+            <p className="text-2xl font-bold ml-6 mt-4 mb-4 text-orange-200 col-span-6">
               Send Money
             </p>
-            <input
-              type="text"
-              placeholder="Amount"
-              className="col-span-3 w-10/12 h-8 ml-7 rounded-full text-white placeholder:text-white placeholder:text-opacity-30 bg-zinc-600 border-2 border-zinc-400 focus:outline-none indent-3"
-            />
-            <input
-              type="text"
-              placeholder="Reciever name"
-              className="col-span-3 w-10/12 h-8 rounded-full text-white placeholder:text-white placeholder:text-opacity-30 bg-zinc-600 border-2 border-zinc-400 focus:outline-none indent-3"
-            />
-            <button className="col-span-2 col-start-3 bg-green-400 rounded-full mt-3 h-5/6 font-bold ">
+            <div className="col-span-3 relative mb-3">
+              <input
+                type="number"
+                placeholder="Amount"
+                id="amount"
+                className="send--amount--input col-span-3 w-10/12 h-8 ml-7 rounded-full text-white placeholder:text-white placeholder:text-opacity-30 bg-zinc-600 border-2 border-zinc-400 focus:outline-none indent-3"
+              />
+              <label
+                htmlFor="amount"
+                className="send--amount--error absolute left-9 text-xs text-red-500 font-semibold hidden"
+              >
+                {sendAmountError}
+              </label>
+            </div>
+            <div className="col-span-3 relative mb-3">
+              <input
+                type="text"
+                placeholder="Reciever name"
+                id="recieverName"
+                className="send--username--input col-span-3 w-10/12 h-8 rounded-full text-white placeholder:text-white placeholder:text-opacity-30 bg-zinc-600 border-2 border-zinc-400 focus:outline-none indent-3"
+              />
+              <label
+                htmlFor="recieverName"
+                className="send--username--error absolute left-1 top-8 text-xs text-red-500 font-semibold hidden"
+              >
+                {sendUserNameError}
+              </label>
+            </div>
+            <button
+              onClick={handleSend}
+              className="col-span-2 col-start-3 bg-green-400 rounded-full mt-3 h-5/6 font-bold "
+            >
               Send
             </button>
           </div>
